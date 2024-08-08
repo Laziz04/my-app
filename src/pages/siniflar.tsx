@@ -12,7 +12,7 @@ interface DataType {
   teacherName: string;
 }
 
-const Siniflar: React.FC = () => {
+const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
   const [teacherData, setTeacherData] = useState<DataType[]>(() => {
@@ -127,7 +127,6 @@ const Siniflar: React.FC = () => {
   };
 
   const hasSelected = selectedRowKeys.length > 0;
-
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
       <Button
@@ -256,15 +255,15 @@ const Siniflar: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="sinf"
-            label="Sinf"
+            label="Sinf name"
             rules={[{ required: true, message: "Please input the sinf name!" }]}
           >
             <Input />
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal>git 
     </div>
   );
 };
 
-export default Siniflar;
+export default Oqituvchilar;
