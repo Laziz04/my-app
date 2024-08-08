@@ -14,7 +14,7 @@ interface DataType {
   phone: string;
 }
 
-// `dataSource` ma'lumotlari
+// Data Source
 const dataSource: DataType[] = [
   {
     key: 1,
@@ -98,22 +98,31 @@ const dataSource: DataType[] = [
   },
 ];
 
-const columns: TableColumnsType<DataType> = [
-  { title: "First Name", dataIndex: "firstName", key: "firstName" },
-  { title: "Last Name", dataIndex: "lastName", key: "lastName" },
-  { title: "Subject", dataIndex: "subject", key: "subject" },
-  { title: "Email", dataIndex: "email", key: "email" },
-  { title: "Phone", dataIndex: "phone", key: "phone" },
-];
-
 const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
   const [teacherData, setTeacherData] = useState<DataType[]>(dataSource);
 
+  const columns: TableColumnsType<DataType> = [
+    { title: "First Name", dataIndex: "firstName", key: "firstName" },
+    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
+    { title: "Subject", dataIndex: "subject", key: "subject" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+      render: (_, record) => (
+        <Space>
+          <Button>Edit</Button>
+          <Button onClick={() => handleDelete(record.key)}>Delete</Button>
+        </Space>
+      ),
+    },
+  ];
+
   const start = () => {
     setLoading(true);
-    // Ajax request after empty completing
     setTimeout(() => {
       setSelectedRowKeys([]);
       setLoading(false);
@@ -125,6 +134,10 @@ const Oqituvchilar: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
+  const handleDelete = (key: number) => {
+    setTeacherData(teacherData.filter((data) => data.key !== key));
+  };
+
   const rowSelection: TableRowSelection<DataType> = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -134,35 +147,27 @@ const Oqituvchilar: React.FC = () => {
 
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
-      <button
-        style={{
-          backgroundColor: "#3498db",
-          color: "#fff",
-          padding: "10px 20px",
-          borderRadius: "5px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          fontSize: "16px",
-          transition: "background-color 0.3s ease",
-          border: "none",
-        }}
-        className="text-white"
+      <Button
+        type="primary"
+        style={{ marginBottom: "20px" }}
+        onClick={start}
+        disabled={!hasSelected}
+        loading={loading}
       >
-        O'qituvchilar
-      </button>
+        Reload
+      </Button>
 
       <div
         style={{
           backgroundColor: "#f5f5f5",
           padding: "10px",
           borderRadius: "5px",
-          marginTop: "20px",
+          marginBottom: "20px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           gap: "10px",
         }}
-        className=" mt-5 "
       >
         <input
           style={{
@@ -176,21 +181,23 @@ const Oqituvchilar: React.FC = () => {
           type="text"
           placeholder="Search"
         />
-        <button className="iconButton border-0 bg-blue-400 p-3 rounded-lg text-white ">
-          <MdOutlineRestartAlt />
-        </button>
-      </div>
-      <Space style={{ marginBottom: 16 }}>
         <Button
-          type="primary"
-          onClick={start}
-          disabled={!hasSelected}
-          loading={loading}
+          style={{
+            backgroundColor: "#3498db",
+            color: "#fff",
+            padding: "10px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "16px",
+            transition: "background-color 0.3s ease",
+            border: "none",
+          }}
         >
-          Reload
+          <MdOutlineRestartAlt />
         </Button>
-        {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
-      </Space>
+      </div>
+
       <Table
         rowSelection={rowSelection}
         columns={columns}
