@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Sidebar from "./pages/sidebar";
+import Sidebar from "./pages/sdibar";
 import Dashboard from "./pages/dashbo";
 import Cost from "./pages/cost";
 import Appliances from "./pages/aplicanse";
