@@ -1,5 +1,5 @@
 import React from "react";
-import "./dwd.css";
+import "./journal.css";
 
 const Jurnal = () => {
   const students = [

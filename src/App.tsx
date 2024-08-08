@@ -8,6 +8,7 @@ const App = () => {
     <Router>
       <div className="">
         <Sidebar />
+        {/* islom kot */}
       </div>
     </Router>
   );
