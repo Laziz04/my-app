@@ -254,13 +254,13 @@ const Oqituvchilar: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="sinf"
-            label="Sinf"
+            label="Sinf name"
             rules={[{ required: true, message: "Please input the sinf name!" }]}
           >
             <Input />
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal>git 
     </div>
   );
 };
