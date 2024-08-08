@@ -3,12 +3,12 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
-import Dashboard from "./dashbo";
-import Oquvchilar from "./Oquvchilar";
+import Dashboard from "./dashboard";
+import Oquvchilar from "./Readers";
 import Otaonalar from "./Otaonalar";
-import Siniflar from "./siniflar";
-import Oqituvchilar from "./oqituvchilar";
-import Jurnal from "../../src/pages/Jurnal";
+import Siniflar from "./classes";
+import Oqituvchilar from "./teachers";
+import Jurnal from "./journal";
 const { Header, Sider, Content } = Layout;
 
 const App: React.FC = () => {
