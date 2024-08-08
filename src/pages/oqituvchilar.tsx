@@ -13,6 +13,90 @@ interface DataType {
   phone: string;
 }
 
+// `dataSource` ma'lumotlari
+const dataSource: DataType[] = [
+  {
+    key: 1,
+    firstName: "Sarvar",
+    lastName: "Akramov",
+    subject: "Matematika",
+    email: "sarvar.akramov@example.com",
+    phone: "+998901234567",
+  },
+  {
+    key: 2,
+    firstName: "Dilnoza",
+    lastName: "Karimova",
+    subject: "Ingliz tili",
+    email: "dilnoza.karimova@example.com",
+    phone: "+998901234568",
+  },
+  {
+    key: 3,
+    firstName: "Abdulloh",
+    lastName: "Raxmatullayev",
+    subject: "Fizika",
+    email: "abdulloh.raxmatullayev@example.com",
+    phone: "+998901234569",
+  },
+  {
+    key: 4,
+    firstName: "Gulbahor",
+    lastName: "Sobirova",
+    subject: "Kimyo",
+    email: "gulbahor.sobirova@example.com",
+    phone: "+998901234570",
+  },
+  {
+    key: 5,
+    firstName: "Bahrom",
+    lastName: "Tursunov",
+    subject: "Tarix",
+    email: "bahrom.tursunov@example.com",
+    phone: "+998901234571",
+  },
+  {
+    key: 6,
+    firstName: "Nigora",
+    lastName: "Mirzaeva",
+    subject: "Biologiya",
+    email: "nigora.mirzaeva@example.com",
+    phone: "+998901234572",
+  },
+  {
+    key: 7,
+    firstName: "Ulug'bek",
+    lastName: "Islomov",
+    subject: "Geografiya",
+    email: "ulugbek.islomov@example.com",
+    phone: "+998901234573",
+  },
+  {
+    key: 8,
+    firstName: "Zulfiya",
+    lastName: "Abdukarimova",
+    subject: "Adabiyot",
+    email: "zulfiya.abdukarimova@example.com",
+    phone: "+998901234574",
+  },
+  {
+    key: 9,
+    firstName: "Jasur",
+    lastName: "Nurmatov",
+    subject: "Informatika",
+    email: "jasur.nurmatov@example.com",
+    phone: "+998901234575",
+  },
+  {
+    key: 10,
+    firstName: "Dilshoda",
+    lastName: "Saidova",
+    subject: "Rus tili",
+    email: "dilshoda.saidova@example.com",
+    phone: "+998901234576",
+  },
+];
+
 const columns: TableColumnsType<DataType> = [
   { title: "First Name", dataIndex: "firstName", key: "firstName" },
   { title: "Last Name", dataIndex: "lastName", key: "lastName" },
@@ -24,8 +108,7 @@ const columns: TableColumnsType<DataType> = [
 const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const [teacherData, setTeacher] = useState<DataType>(dataSource);
+  const [teacherData, setTeacherData] = useState<DataType[]>(dataSource);
 
   const start = () => {
     setLoading(true);
@@ -50,7 +133,7 @@ const Oqituvchilar: React.FC = () => {
 
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
-      <Space style={{ marginBottom: 16 }} className="mt-24">
+      <Space style={{ marginBottom: 16 }}>
         <Button
           type="primary"
           onClick={start}
