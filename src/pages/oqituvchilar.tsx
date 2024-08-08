@@ -40,10 +40,8 @@ const Oqituvchilar: React.FC = () => {
 
   const refreshTable = () => {
     setLoading(true);
-    // Simulating data fetch or updating dataSource
     setTimeout(() => {
-      // Here you might want to fetch new data or refresh the dataSource
-      setTeacherData(dataSource); // Example: setting it to the same dataSource, you might replace this with actual data fetching logic
+      setTeacherData(dataSource);
       setSelectedRowKeys([]);
       setLoading(false);
     }, 1000);

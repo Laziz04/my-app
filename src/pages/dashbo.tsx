@@ -1,6 +1,7 @@
-import { Modal, Button, Space, Table } from "antd";
+import { Modal, Button, Space, Table, AutoComplete } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
+import type { AutoCompleteProps } from "antd";
 
 const { Column } = Table;
 
@@ -31,22 +32,15 @@ const data: DataType[] = [
     OquvYili: "2022-2023",
     tanlash: "Select",
   },
-  {
-    key: "5",
-    OquvYili: "2023-2024",
-    tanlash: "Select",
-  },
-  {
-    key: "6",
-    OquvYili: "2024-2025",
-    tanlash: "Select",
-  },
 ];
 
 const Dashboard: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
+  const [options, setOptions] = React.useState<AutoCompleteProps["options"]>(
+    []
+  );
 
   const showModal = () => {
     setOpen(true);
@@ -66,12 +60,48 @@ const Dashboard: React.FC = () => {
     setOpen(false);
   };
 
+  const handleSearch = (value: string) => {
+    setOptions(() => {
+      if (!value || value.includes("@")) {
+        return [];
+      }
+      return ["gmail.com", "163.com", "qq.com"].map((domain) => ({
+        label: `${value}@${domain}`,
+        value: `${value}@${domain}`,
+      }));
+    });
+  };
+
   return (
     <>
-      <h1 className="mb10">O'quv yillari</h1>
-      <Button type="primary" onClick={showModal}>
-        +
-      </Button>
+      <h1
+        style={{
+          margin: "10px",
+          fontSize: "20px",
+          fontWeight: "bold",
+        }}
+      >
+        O'quv yillari
+      </h1>
+
+      <div>
+        <Button
+          style={{
+            margin: "10px",
+          }}
+          type="primary"
+          onClick={showModal}
+        >
+          Yangi o'quv yili qo'shish
+        </Button>
+      </div>
+      <AutoComplete
+        style={{ width: "100%", height: "30px" }}
+        onSearch={handleSearch}
+        placeholder="Search"
+        options={options}
+      />
+
       <Modal
         title="Title"
         open={open}
