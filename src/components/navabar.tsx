@@ -8,7 +8,7 @@ const HeaderMenu = () => {
         height: "100vh",
       }}
       className="bg-white mb-3 shadow-sm navbar-custom"
-      fixed="top" // Ensures the Navbar stays at the top
+      fixed="top"
     >
       <Container className="flex-column align-items-start">
         <Nav className="flex-column w-100">
