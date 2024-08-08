@@ -1,4 +1,4 @@
-export const teacherDatas = [
+export const dataSource = [
   {
     key: 1,
     firstName: "Sarvar",
