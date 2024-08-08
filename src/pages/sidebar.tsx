@@ -1,32 +1,26 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  HomeIcon,
-  CashIcon,
-  LightBulbIcon,
-  ChartBarIcon,
-  CloudIcon,
-} from "@heroicons/react/outline";
+import { FaHome } from "react-icons/fa";
 
 const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Dashboard", icon: <HomeIcon className="h-6 w-6" />, path: "/" },
-    { name: "Cost", icon: <CashIcon className="h-6 w-6" />, path: "/cost" },
+    { name: "Dashboard", icon: <FaHome className="h-6 w-6" />, path: "/" },
+    { name: "Cost", icon: <FaHome className="h-6 w-6" />, path: "/cost" },
     {
       name: "Appliances",
-      icon: <LightBulbIcon className="h-6 w-6" />,
+      icon: <FaHome className="h-6 w-6" />,
       path: "/appliances",
     },
     {
       name: "Usage by Rooms",
-      icon: <ChartBarIcon className="h-6 w-6" />,
+      icon: <FaHome className="h-6 w-6" />,
       path: "/usage-by-rooms",
     },
     {
       name: "Emissions",
-      icon: <CloudIcon className="h-6 w-6" />,
+      icon: <FaHome className="h-6 w-6" />,
       path: "/emissions",
     },
   ];
