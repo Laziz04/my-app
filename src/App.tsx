@@ -8,8 +8,6 @@ const App = () => {
     <Router>
       <div className="">
         <Sidebar />
-        {/* islomdek dalbayobni ko'rmapman bu dunyoda */}
-        {/* efefewfef */}
       </div>
     </Router>
   );
