@@ -191,22 +191,20 @@ const OtaOnalar: React.FC = () => {
     childClass: "",
     childTeacher: "",
   });
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [currentParent, setCurrentParent] = useState<ParentDataType | null>(
     null
   );
   const [form] = Form.useForm();
+
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const filteredData = searchText
-        ? filterData(parentData, searchText)
-        : parentData;
+    if (searchText) {
+      const filteredData = filterData(parentData, searchText);
       setParentData(filteredData);
-      setLoading(false);
-    }, 1000);
+    } else {
+      setParentData(initialData);
+    }
   }, [searchText]);
 
   useEffect(() => {
@@ -230,7 +228,6 @@ const OtaOnalar: React.FC = () => {
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -239,12 +236,12 @@ const OtaOnalar: React.FC = () => {
   };
 
   const columns: TableColumnsType<ParentDataType> = [
-    { title: " First Name", dataIndex: "firstName", key: "firstName" },
-    { title: " Last Name", dataIndex: "lastName", key: "lastName" },
-    { title: "Farzandining ismi", dataIndex: "childName", key: "childName" },
-    { title: "Farzandining sinfi", dataIndex: "childClass", key: "childClass" },
+    { title: "First Name", dataIndex: "firstName", key: "firstName" },
+    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
+    { title: "Child's Name", dataIndex: "childName", key: "childName" },
+    { title: "Child's Class", dataIndex: "childClass", key: "childClass" },
     {
-      title: "Farzandining ustozi",
+      title: "Child's Teacher",
       dataIndex: "childTeacher",
       key: "childTeacher",
     },
@@ -319,25 +316,17 @@ const OtaOnalar: React.FC = () => {
   };
 
   const hasSelected = selectedRowKeys.length > 0;
-
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
-      <button
+      <Button
+        type="primary"
         onClick={showModal}
         style={{
-          backgroundColor: "#3498db",
-          color: "#fff",
-          padding: "10px",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "16px",
-          transition: "background-color 0.3s ease",
-          border: "none",
           marginBottom: "10px",
         }}
       >
         Add Parent
-      </button>
+      </Button>
       <div
         style={{
           backgroundColor: "#f5f5f5",
@@ -347,22 +336,19 @@ const OtaOnalar: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          gap: "10px",
         }}
       >
         <Input
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "none",
-            outline: "none",
-            fontSize: "16px",
-            width: "100%",
-          }}
           type="text"
           placeholder="Search"
           value={searchText}
           onChange={onSearchChange}
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            fontSize: "16px",
+            width: "calc(100% - 60px)",
+          }}
         />
         <Button
           onClick={handleClearSearch}
@@ -375,7 +361,6 @@ const OtaOnalar: React.FC = () => {
             cursor: "pointer",
             fontSize: "16px",
             transition: "background-color 0.3s ease",
-            border: "none",
           }}
         >
           <MdOutlineRestartAlt />
@@ -396,61 +381,73 @@ const OtaOnalar: React.FC = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Parent First Name</label>
-          <Input
-            name="firstName"
-            placeholder="Parent First Name"
-            value={addParent.firstName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Parent Last Name</label>
-          <Input
-            name="lastName"
-            placeholder="Parent Last Name"
-            value={addParent.lastName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Child's Name</label>
-          <Input
-            name="childName"
-            placeholder="Child's Name"
-            value={addParent.childName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Child's Class</label>
-          <Input
-            name="childClass"
-            placeholder="Child's Class"
-            value={addParent.childClass}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Child's Teacher</label>
-          <Input
-            name="childTeacher"
-            placeholder="Child's Teacher"
-            value={addParent.childTeacher}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
+        <Form layout="vertical">
+          <Form.Item
+            label="Parent First Name"
+            required
+            style={{ marginTop: "10px" }}
+          >
+            <Input
+              name="firstName"
+              placeholder="Parent First Name"
+              value={addParent.firstName}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Parent Last Name"
+            required
+            style={{ marginTop: "10px" }}
+          >
+            <Input
+              name="lastName"
+              placeholder="Parent Last Name"
+              value={addParent.lastName}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Child's Name"
+            required
+            style={{ marginTop: "10px" }}
+          >
+            <Input
+              name="childName"
+              placeholder="Child's Name"
+              value={addParent.childName}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Child's Class"
+            required
+            style={{ marginTop: "10px" }}
+          >
+            <Input
+              name="childClass"
+              placeholder="Child's Class"
+              value={addParent.childClass}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Child's Teacher"
+            required
+            style={{ marginTop: "10px" }}
+          >
+            <Input
+              name="childTeacher"
+              placeholder="Child's Teacher"
+              value={addParent.childTeacher}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
 
       <Modal
         visible={open}
-        title={currentParent?.key ? "Edit Parent" : "Add New Parent"}
+        title={currentParent ? "Edit Parent" : "Add New Parent"}
         onCancel={() => setOpen(false)}
         footer={[
           <Button key="cancel" onClick={() => setOpen(false)}>
@@ -495,7 +492,10 @@ const OtaOnalar: React.FC = () => {
             name="childName"
             label="Child's Name"
             rules={[
-              { required: true, message: "Please input the child's name!" },
+              {
+                required: true,
+                message: "Please input the child's name!",
+              },
             ]}
           >
             <Input />
@@ -504,7 +504,10 @@ const OtaOnalar: React.FC = () => {
             name="childClass"
             label="Child's Class"
             rules={[
-              { required: true, message: "Please input the child's class!" },
+              {
+                required: true,
+                message: "Please input the child's class!",
+              },
             ]}
           >
             <Input />
@@ -513,7 +516,10 @@ const OtaOnalar: React.FC = () => {
             name="childTeacher"
             label="Child's Teacher"
             rules={[
-              { required: true, message: "Please input the child's teacher!" },
+              {
+                required: true,
+                message: "Please input the child's teacher!",
+              },
             ]}
           >
             <Input />

@@ -12,7 +12,7 @@ interface DataType {
   teacherName: string;
 }
 
-const Siniflar: React.FC = () => {
+const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
   const [teacherData, setTeacherData] = useState<DataType[]>(() => {
@@ -125,9 +125,7 @@ const Siniflar: React.FC = () => {
       sinf: teacher.sinf,
     });
   };
-
   const hasSelected = selectedRowKeys.length > 0;
-
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
       <Button
@@ -267,4 +265,4 @@ const Siniflar: React.FC = () => {
   );
 };
 
-export default Siniflar;
+export default Oqituvchilar;
