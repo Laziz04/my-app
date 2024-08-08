@@ -65,6 +65,21 @@ const Oqituvchilar: React.FC = () => {
 
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
+      <button
+        style={{
+          backgroundColor: "#3498db",
+          color: "#fff",
+          padding: "10px",
+          borderRadius: "5px",
+          cursor: "pointer",
+          fontSize: "16px",
+          transition: "background-color 0.3s ease",
+          border: "none",
+          marginBottom: "10px",
+        }}
+      >
+        O'qituvchi qo'shish
+      </button>
       <div
         style={{
           backgroundColor: "#f5f5f5",
