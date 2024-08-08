@@ -31,6 +31,8 @@ const initialData: DataType[] = [
 const Dashboard: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [opens, setOpens] = useState(false);
+  const [confirmLoadings, setConfirmLoadings] = useState(false);
   const [selectedYear, setSelectedYear] = useState<string | undefined>(
     undefined
   );
@@ -84,6 +86,19 @@ const Dashboard: React.FC = () => {
   const handleDelete = (key: React.Key) => {
     const newData = data.filter((item) => item.key !== key);
     setData(newData);
+  };
+  const handleEdit = () => {
+    setOpens(true);
+  };
+
+  const handleOks = () => {
+    setConfirmLoadings(true);
+    setOpens(false);
+    setConfirmLoadings(false);
+  };
+
+  const handleCancels = () => {
+    setOpens(false);
   };
 
   return (
@@ -145,9 +160,18 @@ const Dashboard: React.FC = () => {
           key="action"
           render={(_: any, record: DataType) => (
             <Space size="small" style={{ fontSize: 20 }}>
-              <a>
+              <a onClick={handleEdit}>
                 <EditOutlined />
               </a>
+              <Modal
+                title="Title"
+                open={opens}
+                onOk={handleOks}
+                confirmLoading={confirmLoadings}
+                onCancel={handleCancels}
+              >
+                
+              </Modal>
               <a
                 onClick={() => handleDelete(record.key)}
                 style={{ color: "#f5222d" }}
