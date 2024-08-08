@@ -231,30 +231,46 @@ const Oqituvchilar: React.FC = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Input
-          name="firstName"
-          placeholder="First Name"
-          value={addTeacher.firstName}
-          onChange={handleInputChange}
-        />
-        <Input
-          name="lastName"
-          placeholder="Last Name"
-          value={addTeacher.lastName}
-          onChange={handleInputChange}
-        />
-        <Input
-          name="subject"
-          placeholder="Subject"
-          value={addTeacher.subject}
-          onChange={handleInputChange}
-        />
-        <Input
-          name="email"
-          placeholder="Email"
-          value={addTeacher.email}
-          onChange={handleInputChange}
-        />
+        <div style={{ marginTop: "10px" }}>
+          <label style={{ marginTop: "10px" }}>*First Name</label>
+          <Input
+            name="firstName"
+            placeholder="First Name"
+            value={addTeacher.firstName}
+            style={{ marginTop: "5px", padding: "10px" }}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          <label style={{ marginTop: "10px" }}>*Last Name</label>
+          <Input
+            name="lastName"
+            placeholder="Last Name"
+            value={addTeacher.lastName}
+            style={{ marginTop: "5px", padding: "10px" }}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          <label style={{ marginTop: "10px" }}>*Subject</label>
+          <Input
+            name="subject"
+            placeholder="Subject"
+            value={addTeacher.subject}
+            style={{ marginTop: "5px", padding: "10px" }}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          <label style={{ marginTop: "10px" }}>*Email</label>
+          <Input
+            name="email"
+            placeholder="Email"
+            value={addTeacher.email}
+            style={{ marginTop: "5px", padding: "10px" }}
+            onChange={handleInputChange}
+          />
+        </div>
       </Modal>
 
       <Modal
