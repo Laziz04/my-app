@@ -1,5 +1,47 @@
-import { Modal, Button } from "antd";
+import { Modal, Button, Space, Table } from "antd";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
+
+const { Column } = Table;
+
+interface DataType {
+  key: React.Key;
+  OquvYili: string;
+  tanlash: string;
+}
+
+const data: DataType[] = [
+  {
+    key: "1",
+    OquvYili: "2019-2020",
+    tanlash: "Select",
+  },
+  {
+    key: "2",
+    OquvYili: "2020-2021",
+    tanlash: "Select",
+  },
+  {
+    key: "3",
+    OquvYili: "2021-2022",
+    tanlash: "Select",
+  },
+  {
+    key: "4",
+    OquvYili: "2022-2023",
+    tanlash: "Select",
+  },
+  {
+    key: "5",
+    OquvYili: "2023-2024",
+    tanlash: "Select",
+  },
+  {
+    key: "6",
+    OquvYili: "2024-2025",
+    tanlash: "Select",
+  },
+];
 
 const Dashboard: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -67,6 +109,25 @@ const Dashboard: React.FC = () => {
           </option>
         </select>
       </Modal>
+
+      <Table dataSource={data}>
+        <Column title="O'quv Yili" dataIndex="OquvYili" key="OquvYili" />
+        <Column title="Tanlash" dataIndex="tanlash" key="tanlash" />
+        <Column
+          title="Action"
+          key="action"
+          render={(_: any, record: DataType) => (
+            <Space size="small" style={{ fontSize: 20 }}>
+              <a>
+                <EditOutlined />
+              </a>
+              <a style={{ backgroundColor: "#f5222d" }}>
+                <DeleteOutlined />
+              </a>
+            </Space>
+          )}
+        />
+      </Table>
     </>
   );
 };
