@@ -9,10 +9,9 @@ import Appliances from "./siniflar";
 import Oquvchilar from "./O'quvchilar";
 import Otaonalar from "./Ota onalar";
 import Darsjadvali from "./Dars jadvali";
-import Jurnal from "./Jurnal";
 import Siniflar from "./siniflar";
 import Oqituvchilar from "./oqituvchilar";
-
+import Jurnal from "../../src/pages/Jurnal";
 const { Header, Sider, Content } = Layout;
 
 const App: React.FC = () => {
