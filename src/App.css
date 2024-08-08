@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* HeaderMenu.css */
+
+.container-custom {
+  width: 100%;
+}
+
+.nav-link {
+  color: black;
+  margin: 10px 0;
+}
