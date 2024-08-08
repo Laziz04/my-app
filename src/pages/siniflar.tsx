@@ -260,7 +260,7 @@ const Oqituvchilar: React.FC = () => {
             <Input />
           </Form.Item>
         </Form>
-      </Modal>git 
+      </Modal>
     </div>
   );
 };

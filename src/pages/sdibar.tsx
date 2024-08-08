@@ -8,7 +8,6 @@ import Cost from "./oqituvchilar";
 import Appliances from "./siniflar";
 import Oquvchilar from "./O'quvchilar";
 import Otaonalar from "./Ota onalar";
-import Darsjadvali from "./Dars jadvali";
 import Siniflar from "./siniflar";
 import Oqituvchilar from "./oqituvchilar";
 import Jurnal from "../../src/pages/Jurnal";
@@ -55,11 +54,6 @@ const App: React.FC = () => {
               label: <Link to="/Otaonalar">Ota onalar</Link>,
             },
             {
-              key: "6",
-              icon: <FaHome className="h-6 w-6" />,
-              label: <Link to="/Otaonalar">Dars jadvali</Link>,
-            },
-            {
               key: "7",
               icon: <FaHome className="h-6 w-6" />,
               label: <Link to="/Jurnal">Jurnal</Link>,
@@ -95,7 +89,6 @@ const App: React.FC = () => {
             <Route path="/Siniflar" element={<Siniflar />} />
             <Route path="/O'quvchilar" element={<Oquvchilar />} />
             <Route path="/Otaonalar" element={<Otaonalar />} />
-            <Route path="/Otaonalar" element={<Darsjadvali />} />
             <Route path="/Jurnal" element={<Jurnal />} />
           </Routes>
         </Content>
