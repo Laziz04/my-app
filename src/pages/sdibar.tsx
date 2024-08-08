@@ -6,6 +6,10 @@ import {
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { FaHome } from "react-icons/fa";
+import { Route, Routes } from "react-router-dom";
+import Dashboard from "./dashbo";
+import Cost from "./cost";
+import Appliances from "./aplicanse";
 
 const { Header, Sider, Content } = Layout;
 
@@ -73,7 +77,11 @@ const Sidebar: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/cost" element={<Cost />} />
+            <Route path="/appliances" element={<Appliances />} />
+          </Routes>
         </Content>
       </Layout>
     </Layout>
