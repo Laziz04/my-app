@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Table, Space } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
+import { MdOutlineRestartAlt } from "react-icons/md";
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
@@ -133,6 +134,52 @@ const Oqituvchilar: React.FC = () => {
 
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
+      <button
+        style={{
+          backgroundColor: "#3498db",
+          color: "#fff",
+          padding: "10px 20px",
+          borderRadius: "5px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          fontSize: "16px",
+          transition: "background-color 0.3s ease",
+          border: "none",
+        }}
+        className="text-white"
+      >
+        O'qituvchilar
+      </button>
+
+      <div
+        style={{
+          backgroundColor: "#f5f5f5",
+          padding: "10px",
+          borderRadius: "5px",
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "10px",
+        }}
+        className=" mt-5 "
+      >
+        <input
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            border: "none",
+            outline: "none",
+            fontSize: "16px",
+            width: "100%",
+          }}
+          type="text"
+          placeholder="Search"
+        />
+        <button className="iconButton border-0 bg-blue-400 p-3 rounded-lg text-white ">
+          <MdOutlineRestartAlt />
+        </button>
+      </div>
       <Space style={{ marginBottom: 16 }}>
         <Button
           type="primary"
