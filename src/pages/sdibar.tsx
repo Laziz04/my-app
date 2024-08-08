@@ -4,7 +4,7 @@ import { Button, Layout, Menu, theme } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import Dashboard from "./dashbo";
-import Oquvchilar from "./O'quvchilar";
+import Oquvchilar from "./Oquvchilar";
 import Otaonalar from "./Otaonalar";
 import Siniflar from "./siniflar";
 import Oqituvchilar from "./oqituvchilar";
