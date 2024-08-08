@@ -111,6 +111,7 @@ const Oqituvchilar: React.FC = () => {
         rowSelection={rowSelection}
         columns={columns}
         dataSource={teacherData}
+        pagination={{ pageSize: 5 }}
       />
     </div>
   );
