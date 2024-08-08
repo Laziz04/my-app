@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
               <a>
                 <EditOutlined />
               </a>
-              <a style={{ backgroundColor: "#f5222d" }}>
+              <a style={{ color: "#f5222d" }}>
                 <DeleteOutlined />
               </a>
             </Space>
