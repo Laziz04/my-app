@@ -4,8 +4,14 @@ import { Button, Layout, Menu, theme } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import Dashboard from "./dashbo";
-import Cost from "./cost";
-import Appliances from "./aplicanse";
+import Cost from "./oqituvchilar";
+import Appliances from "./siniflar";
+import Oquvchilar from "./O'quvchilar";
+import Otaonalar from "./Ota onalar";
+import Darsjadvali from "./Dars jadvali";
+import Jurnal from "./Jurnal";
+import Siniflar from "./siniflar";
+import Oqituvchilar from "./oqituvchilar";
 
 const { Header, Sider, Content } = Layout;
 
@@ -27,17 +33,37 @@ const App: React.FC = () => {
             {
               key: "1",
               icon: <FaHome className="h-6 w-6" />,
-              label: <Link to="/">Dashboard</Link>,
+              label: <Link to="/">O'quv yillari</Link>,
             },
             {
               key: "2",
               icon: <FaHome className="h-6 w-6" />,
-              label: <Link to="/cost">Cost</Link>,
+              label: <Link to="/O'qituvchilar">O'qituvchilar</Link>,
             },
             {
               key: "3",
               icon: <FaHome className="h-6 w-6" />,
-              label: <Link to="/appliances">Appliances</Link>,
+              label: <Link to="/Siniflar">Siniflar</Link>,
+            },
+            {
+              key: "4",
+              icon: <FaHome className="h-6 w-6" />,
+              label: <Link to="/O'quvchilar">O'quvchilar</Link>,
+            },
+            {
+              key: "5",
+              icon: <FaHome className="h-6 w-6" />,
+              label: <Link to="/Otaonalar">Ota onalar</Link>,
+            },
+            {
+              key: "6",
+              icon: <FaHome className="h-6 w-6" />,
+              label: <Link to="/Otaonalar">Dars jadvali</Link>,
+            },
+            {
+              key: "7",
+              icon: <FaHome className="h-6 w-6" />,
+              label: <Link to="/Jurnal">Jurnal</Link>,
             },
           ]}
         />
@@ -66,8 +92,12 @@ const App: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/cost" element={<Cost />} />
-            <Route path="/appliances" element={<Appliances />} />
+            <Route path="/O'qituvchilar" element={<Oqituvchilar />} />
+            <Route path="/Siniflar" element={<Siniflar />} />
+            <Route path="/O'quvchilar" element={<Oquvchilar />} />
+            <Route path="/Otaonalar" element={<Otaonalar />} />
+            <Route path="/Otaonalar" element={<Darsjadvali />} />
+            <Route path="/Jurnal" element={<Jurnal />} />
           </Routes>
         </Content>
       </Layout>
