@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
@@ -22,7 +16,7 @@ const App: React.FC = () => {
   } = theme.useToken();
 
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "97vh" }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu

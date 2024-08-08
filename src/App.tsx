@@ -8,9 +8,8 @@ import Appliances from "./pages/aplicanse";
 const App = () => {
   return (
     <Router>
-      <div className="flex">
+      <div className="">
         <Sidebar />
-        
       </div>
     </Router>
   );
