@@ -36,8 +36,8 @@ const Jurnal: React.FC = () => {
         <tbody>
           {data.map((row, index) => (
             <tr key={index}>
-              {Object.values(row).map((value, i) => (
-                <td key={i}>{value}</td>
+              {Object.values(row).map((value: any, i) => (
+                <td key={i}>{value as string | number}</td>
               ))}
             </tr>
           ))}
