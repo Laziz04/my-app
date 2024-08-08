@@ -4,8 +4,6 @@ import { Button, Layout, Menu, theme } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import Dashboard from "./dashbo";
-import Cost from "./oqituvchilar";
-import Appliances from "./siniflar";
 import Oquvchilar from "./O'quvchilar";
 import Otaonalar from "./Ota onalar";
 import Siniflar from "./siniflar";
