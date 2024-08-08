@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Table, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Table, Space, Input, Modal } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { dataSource } from "./datas/teacherData";
@@ -19,6 +19,43 @@ const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
   const [teacherData, setTeacherData] = useState<DataType[]>(dataSource);
+  const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      const filteredData = searchText
+        ? filterData(dataSource, searchText)
+        : dataSource;
+      setTeacherData(filteredData);
+      setLoading(false);
+    }, 1000);
+  }, [searchText]);
+
+  const filterData = (data: DataType[], search: string) => {
+    return data.filter((item) =>
+      Object.values(item).some((value) =>
+        value.toString().toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  };
+
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleClearSearch = () => {
+    setSearchText("");
+  };
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const handleDelete = (key: number) => {
+    setTeacherData(teacherData.filter((data) => data.key !== key));
+  };
 
   const columns: TableColumnsType<DataType> = [
     { title: "First Name", dataIndex: "firstName", key: "firstName" },
@@ -38,27 +75,36 @@ const Oqituvchilar: React.FC = () => {
     },
   ];
 
-  const refreshTable = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setTeacherData(dataSource);
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
-  };
-
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const handleDelete = (key: number) => {
-    setTeacherData(teacherData.filter((data) => data.key !== key));
-  };
-
   const rowSelection: TableRowSelection<DataType> = {
     selectedRowKeys,
     onChange: onSelectChange,
+  };
+
+  const [addTeacher, setAddTeacher] = useState<DataType>({
+    key: teacherData.length + 1,
+    firstName: "",
+    lastName: "",
+    subject: "",
+    email: "",
+    phone: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddTeacher({ ...addTeacher, [e.target.name]: e.target.value });
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setTeacherData([...teacherData, addTeacher]);
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const hasSelected = selectedRowKeys.length > 0;
@@ -66,6 +112,7 @@ const Oqituvchilar: React.FC = () => {
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
       <button
+        onClick={showModal}
         style={{
           backgroundColor: "#3498db",
           color: "#fff",
@@ -92,7 +139,7 @@ const Oqituvchilar: React.FC = () => {
           gap: "10px",
         }}
       >
-        <input
+        <Input
           style={{
             padding: "10px",
             borderRadius: "5px",
@@ -103,9 +150,11 @@ const Oqituvchilar: React.FC = () => {
           }}
           type="text"
           placeholder="Search"
+          value={searchText}
+          onChange={onSearchChange}
         />
         <Button
-          onClick={refreshTable} // Moved onClick handler to Button
+          onClick={handleClearSearch}
           style={{
             backgroundColor: "#3498db",
             color: "#fff",
@@ -127,8 +176,40 @@ const Oqituvchilar: React.FC = () => {
         columns={columns}
         dataSource={teacherData}
         pagination={{ pageSize: 5 }}
-        loading={loading} // Show loading state when fetching data
+        loading={loading}
       />
+
+      <Modal
+        title="Add Teacher"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Input
+          name="firstName"
+          placeholder="First Name"
+          value={addTeacher.firstName}
+          onChange={handleInputChange}
+        />
+        <Input
+          name="lastName"
+          placeholder="Last Name"
+          value={addTeacher.lastName}
+          onChange={handleInputChange}
+        />
+        <Input
+          name="subject"
+          placeholder="Subject"
+          value={addTeacher.subject}
+          onChange={handleInputChange}
+        />
+        <Input
+          name="email"
+          placeholder="Email"
+          value={addTeacher.email}
+          onChange={handleInputChange}
+        />
+      </Modal>
     </div>
   );
 };
