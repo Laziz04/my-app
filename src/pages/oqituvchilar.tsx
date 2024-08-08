@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Table, Space } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
+import { dataSource } from "./datas/teacherData";
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
@@ -13,11 +14,6 @@ interface DataType {
   email: string;
   phone: string;
 }
-
-// Data Source
-const dataSource: DataType[] = [
-  // ... (your data here)
-];
 
 const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
