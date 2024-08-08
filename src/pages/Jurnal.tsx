@@ -75,22 +75,6 @@ const Jurnal = () => {
       physics: 77,
       chemistry: 49,
     },
-    {
-      name: "SHRUTI",
-      maths: 54,
-      english: 50,
-      biology: 84,
-      physics: 66,
-      chemistry: 45,
-    },
-    {
-      name: "SHREYA",
-      maths: 47,
-      english: 60,
-      biology: 31,
-      physics: 72,
-      chemistry: 31,
-    },
   ];
 
   return (
