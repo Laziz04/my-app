@@ -170,7 +170,7 @@ const Oquvchilar: React.FC = () => {
           marginBottom: "10px",
         }}
       >
-        O'qituvchi qo'shish
+        O'quvchi qo'shish
       </button>
       <div
         style={{
