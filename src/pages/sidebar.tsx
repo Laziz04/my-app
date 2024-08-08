@@ -13,16 +13,6 @@ const Sidebar = () => {
       icon: <FaHome className="h-6 w-6" />,
       path: "/appliances",
     },
-    {
-      name: "Usage by Rooms",
-      icon: <FaHome className="h-6 w-6" />,
-      path: "/usage-by-rooms",
-    },
-    {
-      name: "Emissions",
-      icon: <FaHome className="h-6 w-6" />,
-      path: "/emissions",
-    },
   ];
 
   return (
