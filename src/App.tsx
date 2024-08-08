@@ -8,7 +8,7 @@ const App = () => {
     <Router>
       <div className="">
         <Sidebar />
-        {/* Abdulazizdek dalbayobni ko'rmapman bu dunyoda */}
+        {/* islomdek dalbayobni ko'rmapman bu dunyoda */}
         {/* efefewfef */}
       </div>
     </Router>
