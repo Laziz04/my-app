@@ -5,7 +5,7 @@ import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import Dashboard from "./dashbo";
 import Oquvchilar from "./O'quvchilar";
-import Otaonalar from "./Ota onalar";
+import Otaonalar from "./Otaonalar";
 import Siniflar from "./siniflar";
 import Oqituvchilar from "./oqituvchilar";
 import Jurnal from "../../src/pages/Jurnal";
