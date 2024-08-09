@@ -4,7 +4,7 @@ import "./dwd.css";
 const Jurnal = () => {
   const students = [
     {
-      name: "ANURAG KUMAR",
+      name: "Ali",
       maths: 87,
       english: 57,
       biology: 77,
@@ -12,7 +12,7 @@ const Jurnal = () => {
       chemistry: 87,
     },
     {
-      name: "SAPTARSHI MONDAL",
+      name: "Aslbek",
       maths: 98,
       english: 88,
       biology: 58,
@@ -20,7 +20,7 @@ const Jurnal = () => {
       chemistry: 90,
     },
     {
-      name: "SARTHAK GHOSH",
+      name: "Islom",
       maths: 85,
       english: 95,
       biology: 45,
@@ -28,7 +28,7 @@ const Jurnal = () => {
       chemistry: 81,
     },
     {
-      name: "NISCHAY",
+      name: "Maruf",
       maths: 32,
       english: 62,
       biology: 98,
@@ -36,7 +36,7 @@ const Jurnal = () => {
       chemistry: 62,
     },
     {
-      name: "AKASH SHARMA",
+      name: "Akbar",
       maths: 66,
       english: 46,
       biology: 73,
@@ -44,7 +44,7 @@ const Jurnal = () => {
       chemistry: 76,
     },
     {
-      name: "DEEPESH",
+      name: "Laziz",
       maths: 72,
       english: 12,
       biology: 54,
@@ -52,7 +52,7 @@ const Jurnal = () => {
       chemistry: 72,
     },
     {
-      name: "PRATEEK",
+      name: "Nurbek",
       maths: 56,
       english: 66,
       biology: 93,
@@ -60,7 +60,7 @@ const Jurnal = () => {
       chemistry: 44,
     },
     {
-      name: "PRATISH",
+      name: "Alisherbek",
       maths: 98,
       english: 65,
       biology: 44,
@@ -68,7 +68,7 @@ const Jurnal = () => {
       chemistry: 77,
     },
     {
-      name: "SHIVANI",
+      name: "Nurislom",
       maths: 92,
       english: 52,
       biology: 82,
@@ -95,7 +95,6 @@ const Jurnal = () => {
           <input type="text" placeholder="Tell me what you want to do" />
         </div>
       </div>
-
       <div className="toolbar">
         <div className="toolbar-left">
           <button>Cut</button>
@@ -116,7 +115,6 @@ const Jurnal = () => {
           <button>Wrap Text</button>
         </div>
       </div>
-
       <div className="table-container">
         <table>
           <thead>
