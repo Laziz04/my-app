@@ -14,8 +14,6 @@ interface DataType {
   phone: string;
 }
 
-const API_URL = "https://c7bdff0b28aa98c1.mokky.dev/student";
-
 const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,42 +25,16 @@ const Oqituvchilar: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    setLoading(true);
     axios
-      .get(API_URL)
-      .then((response) => {
-        setTeacherData(response.data);
-        localStorage.setItem("teacherData", JSON.stringify(response.data));
+      .get("https://c7bdff0b28aa98c1.mokky.dev/student")
+      .then((res) => {
+        // Assuming the API returns an array of teachers with the expected structure
+        setTeacherData(res.data);
       })
-      .catch((error) => {
-        console.error("Failed to fetch data", error);
-        const storedData = localStorage.getItem("teacherData");
-        if (storedData) {
-          setTeacherData(JSON.parse(storedData));
-        }
-      })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        console.error("Failed to fetch teacher data");
+      });
   }, []);
-
-  useEffect(() => {
-    if (!searchText) {
-      return;
-    }
-    const filteredData = filterData(teacherData, searchText);
-    setTeacherData(filteredData);
-  }, [searchText]);
-
-  useEffect(() => {
-    localStorage.setItem("teacherData", JSON.stringify(teacherData));
-  }, [teacherData]);
-
-  const filterData = (data: DataType[], search: string) => {
-    return data.filter((item) =>
-      Object.values(item).some((value) =>
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      )
-    );
-  };
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
@@ -77,89 +49,13 @@ const Oqituvchilar: React.FC = () => {
   };
 
   const handleDelete = (key: number) => {
-    axios
-      .delete(`${API_URL}/${key}`)
-      .then(() => {
-        setTeacherData(teacherData.filter((data) => data.key !== key));
-      })
-      .catch((error) => {
-        console.error("Failed to delete data", error);
-      });
-  };
-
-  const handleAddModalOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        axios
-          .post(API_URL, values)
-          .then((response) => {
-            setTeacherData([
-              ...teacherData,
-              { key: response.data.id, ...values } as DataType,
-            ]);
-            setIsAddModalOpen(false);
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Failed to add data", error);
-          });
-      })
-      .catch((info) => {
-        console.log("Validate Failed:", info);
-      });
-  };
-
-  const handleEditModalOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        if (currentTeacher) {
-          axios
-            .put(`${API_URL}/${currentTeacher.key}`, values)
-            .then(() => {
-              setTeacherData(
-                teacherData.map((teacher) =>
-                  teacher.key === currentTeacher.key
-                    ? { ...currentTeacher, ...values }
-                    : teacher
-                )
-              );
-              setIsEditModalOpen(false);
-              form.resetFields();
-            })
-            .catch((error) => {
-              console.error("Failed to edit data", error);
-            });
-        }
-      })
-      .catch((info) => {
-        console.log("Validate Failed:", info);
-      });
-  };
-
-  const handleAddModalCancel = () => {
-    setIsAddModalOpen(false);
-  };
-
-  const handleEditModalCancel = () => {
-    setIsEditModalOpen(false);
-  };
-
-  const handleEdit = (teacher: DataType) => {
-    setCurrentTeacher(teacher);
-    form.setFieldsValue(teacher);
-    setIsEditModalOpen(true);
+    setTeacherData(teacherData.filter((data) => data.key !== key));
   };
 
   const columns = [
     { title: "First Name", dataIndex: "firstName", key: "firstName" },
     { title: "Last Name", dataIndex: "lastName", key: "lastName" },
-    {
-      title: "Class",
-      dataIndex: "className",
-      key: "className",
-    },
+    { title: "Class", dataIndex: "className", key: "className" },
     { title: "Subject", dataIndex: "subject", key: "subject" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
@@ -185,6 +81,57 @@ const Oqituvchilar: React.FC = () => {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+  };
+
+  const handleAddModalOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        setTeacherData([
+          ...teacherData,
+          { key: Date.now(), ...values } as DataType,
+        ]);
+        setIsAddModalOpen(false);
+        form.resetFields();
+      })
+      .catch((info) => {
+        console.error("Validation Failed:", info);
+      });
+  };
+
+  const handleEditModalOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (currentTeacher) {
+          setTeacherData(
+            teacherData.map((teacher) =>
+              teacher.key === currentTeacher.key
+                ? { ...currentTeacher, ...values }
+                : teacher
+            )
+          );
+        }
+        setIsEditModalOpen(false);
+        form.resetFields();
+      })
+      .catch((info) => {
+        console.error("Validation Failed:", info);
+      });
+  };
+
+  const handleAddModalCancel = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleEditModalCancel = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleEdit = (teacher: DataType) => {
+    setCurrentTeacher(teacher);
+    form.setFieldsValue(teacher);
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -297,7 +244,10 @@ const Oqituvchilar: React.FC = () => {
           <Form.Item
             name="email"
             label="Email"
-            rules={[{ required: true, message: "Please input the email!" }]}
+            rules={[
+              { required: true, message: "Please input the email!" },
+              { type: "email", message: "Please enter a valid email!" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -353,7 +303,10 @@ const Oqituvchilar: React.FC = () => {
           <Form.Item
             name="email"
             label="Email"
-            rules={[{ required: true, message: "Please input the email!" }]}
+            rules={[
+              { required: true, message: "Please input the email!" },
+              { type: "email", message: "Please enter a valid email!" },
+            ]}
           >
             <Input />
           </Form.Item>
