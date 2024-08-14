@@ -1,52 +1,55 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Space, Input, Modal, Form, Select } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
+import { Button, Table, Space, Input, Modal, Form } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
-import { dataSource } from "./datas/teacherData";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-
-type TableRowSelection<T> = TableProps<T>["rowSelection"];
+import axios from "axios";
 
 interface DataType {
   key: number;
   firstName: string;
   lastName: string;
+  className: string;
   subject: string;
   email: string;
   phone: string;
 }
 
+const API_URL = "https://c7bdff0b28aa98c1.mokky.dev/student";
+
 const Oqituvchilar: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
-  const [teacherData, setTeacherData] = useState<DataType[]>(() => {
-    const storedData = localStorage.getItem("teacherData");
-    return storedData ? JSON.parse(storedData) : dataSource;
-  });
+  const [teacherData, setTeacherData] = useState<DataType[]>([]);
   const [searchText, setSearchText] = useState("");
-  const [addTeacher, setAddTeacher] = useState<DataType>({
-    key: Date.now(),
-    firstName: "",
-    lastName: "",
-    subject: "",
-    email: "",
-    phone: "",
-  });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTeacher, setCurrentTeacher] = useState<DataType | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      const filteredData = searchText
-        ? filterData(dataSource, searchText)
-        : dataSource;
-      setTeacherData(filteredData);
-      setLoading(false);
-    }, 1000);
+    axios
+      .get(API_URL)
+      .then((response) => {
+        setTeacherData(response.data);
+        localStorage.setItem("teacherData", JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.error("Failed to fetch data", error);
+        const storedData = localStorage.getItem("teacherData");
+        if (storedData) {
+          setTeacherData(JSON.parse(storedData));
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!searchText) {
+      return;
+    }
+    const filteredData = filterData(teacherData, searchText);
+    setTeacherData(filteredData);
   }, [searchText]);
 
   useEffect(() => {
@@ -70,31 +73,108 @@ const Oqituvchilar: React.FC = () => {
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
   const handleDelete = (key: number) => {
-    setTeacherData(teacherData.filter((data) => data.key !== key));
+    axios
+      .delete(`${API_URL}/${key}`)
+      .then(() => {
+        setTeacherData(teacherData.filter((data) => data.key !== key));
+      })
+      .catch((error) => {
+        console.error("Failed to delete data", error);
+      });
   };
 
-  const columns: TableColumnsType<DataType> = [
+  const handleAddModalOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        axios
+          .post(API_URL, values)
+          .then((response) => {
+            setTeacherData([
+              ...teacherData,
+              { key: response.data.id, ...values } as DataType,
+            ]);
+            setIsAddModalOpen(false);
+            form.resetFields();
+          })
+          .catch((error) => {
+            console.error("Failed to add data", error);
+          });
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleEditModalOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (currentTeacher) {
+          axios
+            .put(`${API_URL}/${currentTeacher.key}`, values)
+            .then(() => {
+              setTeacherData(
+                teacherData.map((teacher) =>
+                  teacher.key === currentTeacher.key
+                    ? { ...currentTeacher, ...values }
+                    : teacher
+                )
+              );
+              setIsEditModalOpen(false);
+              form.resetFields();
+            })
+            .catch((error) => {
+              console.error("Failed to edit data", error);
+            });
+        }
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleAddModalCancel = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleEditModalCancel = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleEdit = (teacher: DataType) => {
+    setCurrentTeacher(teacher);
+    form.setFieldsValue(teacher);
+    setIsEditModalOpen(true);
+  };
+
+  const columns = [
     { title: "First Name", dataIndex: "firstName", key: "firstName" },
     { title: "Last Name", dataIndex: "lastName", key: "lastName" },
+    {
+      title: "Class",
+      dataIndex: "className",
+      key: "className",
+    },
     { title: "Subject", dataIndex: "subject", key: "subject" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
       title: "Phone",
       dataIndex: "phone",
       key: "phone",
-      render: (_, record) => (
+      render: (_: any, record: DataType) => (
         <Space size="small" style={{ fontSize: 20 }}>
           <a onClick={() => handleEdit(record)}>
             <EditOutlined />
           </a>
           <a
             onClick={() => handleDelete(record.key)}
-            style={{ color: "#f5222d" }}>
+            style={{ color: "#f5222d" }}
+          >
             <DeleteOutlined />
           </a>
         </Space>
@@ -102,70 +182,15 @@ const Oqituvchilar: React.FC = () => {
     },
   ];
 
-  const rowSelection: TableRowSelection<DataType> = {
+  const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddTeacher({ ...addTeacher, [e.target.name]: e.target.value });
-  };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setTeacherData([...teacherData, { ...addTeacher, key: Date.now() }]);
-    setIsModalOpen(false);
-    setAddTeacher({
-      key: Date.now(),
-      firstName: "",
-      lastName: "",
-      subject: "",
-      email: "",
-      phone: "",
-    });
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const onFinish = (values: any) => {
-    if (currentTeacher) {
-      setTeacherData(
-        teacherData.map((teacher) =>
-          teacher.key === currentTeacher.key
-            ? { ...currentTeacher, ...values }
-            : teacher
-        )
-      );
-    } else {
-      setTeacherData([...teacherData, { key: Date.now(), ...values }]);
-    }
-    setOpen(false);
-    form.resetFields();
-  };
-
-  const handleEdit = (teacher: DataType) => {
-    setCurrentTeacher(teacher);
-    setOpen(true);
-    form.setFieldsValue({
-      firstName: teacher.firstName,
-      lastName: teacher.lastName,
-      subject: teacher.subject,
-      email: teacher.email,
-      phone: teacher.phone,
-    });
-  };
-
-  const hasSelected = selectedRowKeys.length > 0;
-
   return (
     <div style={{ padding: "24px", backgroundColor: "#fff" }}>
-      <button
-        onClick={showModal}
+      <Button
+        onClick={() => setIsAddModalOpen(true)}
         style={{
           backgroundColor: "#3498db",
           color: "#fff",
@@ -176,9 +201,10 @@ const Oqituvchilar: React.FC = () => {
           transition: "background-color 0.3s ease",
           border: "none",
           marginBottom: "10px",
-        }}>
+        }}
+      >
         O'qituvchi qo'shish
-      </button>
+      </Button>
       <div
         style={{
           backgroundColor: "#f5f5f5",
@@ -189,7 +215,8 @@ const Oqituvchilar: React.FC = () => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "10px",
-        }}>
+        }}
+      >
         <Input
           style={{
             padding: "10px",
@@ -216,7 +243,8 @@ const Oqituvchilar: React.FC = () => {
             fontSize: "16px",
             transition: "background-color 0.3s ease",
             border: "none",
-          }}>
+          }}
+        >
           <MdOutlineRestartAlt />
         </Button>
       </div>
@@ -231,103 +259,111 @@ const Oqituvchilar: React.FC = () => {
 
       <Modal
         title="Add Teacher"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*First Name</label>
-          <Input
-            name="firstName"
-            placeholder="First Name"
-            value={addTeacher.firstName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Last Name</label>
-          <Input
-            name="lastName"
-            placeholder="Last Name"
-            value={addTeacher.lastName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Subject</label>
-          <Input
-            name="subject"
-            placeholder="Subject"
-            value={addTeacher.subject}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Email</label>
-          <Input
-            name="email"
-            placeholder="Email"
-            value={addTeacher.email}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-      </Modal>
-
-      <Modal
-        visible={open}
-        title={currentTeacher?.key ? "Edit Teacher" : "Add New Teacher"}
-        onCancel={() => setOpen(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => form.submit()}>
-            Save
-          </Button>,
-        ]}>
-        <Form
-          form={form}
-          layout="vertical"
-          name="teacherForm"
-          onFinish={onFinish}>
+        open={isAddModalOpen}
+        onOk={handleAddModalOk}
+        onCancel={handleAddModalCancel}
+      >
+        <Form form={form} layout="vertical" name="addTeacherForm">
           <Form.Item
             name="firstName"
             label="First Name"
             rules={[
               { required: true, message: "Please input the first name!" },
-            ]}>
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="lastName"
             label="Last Name"
-            rules={[
-              { required: true, message: "Please input the last name!" },
-            ]}>
+            rules={[{ required: true, message: "Please input the last name!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="className"
+            label="Class"
+            rules={[{ required: true, message: "Please input the class!" }]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="subject"
             label="Subject"
-            rules={[{ required: true, message: "Please select the subject!" }]}>
-            <Select>
-              <Select.Option value="Math">Math</Select.Option>
-              <Select.Option value="English">English</Select.Option>
-              <Select.Option value="Science">Science</Select.Option>
-            </Select>
+            rules={[{ required: true, message: "Please input the subject!" }]}
+          >
+            <Input />
           </Form.Item>
           <Form.Item
             name="email"
             label="Email"
-            rules={[
-              { type: "email", message: "The input is not valid E-mail!" },
-            ]}>
+            rules={[{ required: true, message: "Please input the email!" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Phone">
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[
+              { required: true, message: "Please input the phone number!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Edit Teacher"
+        open={isEditModalOpen}
+        onOk={handleEditModalOk}
+        onCancel={handleEditModalCancel}
+      >
+        <Form form={form} layout="vertical" name="editTeacherForm">
+          <Form.Item
+            name="firstName"
+            label="First Name"
+            rules={[
+              { required: true, message: "Please input the first name!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="lastName"
+            label="Last Name"
+            rules={[{ required: true, message: "Please input the last name!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="className"
+            label="Class"
+            rules={[{ required: true, message: "Please input the class!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="subject"
+            label="Subject"
+            rules={[{ required: true, message: "Please input the subject!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true, message: "Please input the email!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[
+              { required: true, message: "Please input the phone number!" },
+            ]}
+          >
             <Input />
           </Form.Item>
         </Form>
