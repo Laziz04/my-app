@@ -1,333 +1,428 @@
-import React, { useState, useEffect } from "react";
-import { Button, Table, Space, Input, Modal, Form, Select } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
-import { MdOutlineRestartAlt } from "react-icons/md";
-import { studentData } from "./datas/teacherData";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Table, Button, Pagination, Modal, Form, Input, Select } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { FaUserGraduate } from "react-icons/fa";
+import "../pages/readers.css";
 
-type TableRowSelection<T> = TableProps<T>["rowSelection"];
+const { Option } = Select;
 
-interface DataType {
+interface Student {
   key: number;
   firstName: string;
   lastName: string;
-  subject: string;
+  class: string;
   email: string;
-  phone: string;
+  phone?: string;
 }
 
-const Oquvchilar: React.FC = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [studentsData, setStudentsData] = useState<DataType[]>(() => {
-    const storedData = localStorage.getItem("studentsData");
-    return storedData ? JSON.parse(storedData) : studentData;
-  });
-  const [searchText, setSearchText] = useState("");
-  const [addTeacher, setAddTeacher] = useState<DataType>({
-    key: Date.now(),
-    firstName: "",
-    lastName: "",
-    subject: "",
-    email: "",
-    phone: "",
-  });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [currentTeacher, setCurrentTeacher] = useState<DataType | null>(null);
+const initialStudents: Student[] = [
+  {
+    key: 1,
+    firstName: "Ali",
+    lastName: "Ahmadov",
+    class: "10-A",
+    email: "ali.ahmadov@example.com",
+    phone: "+998901234580",
+  },
+  {
+    key: 2,
+    firstName: "Sara",
+    lastName: "Toshpulatova",
+    class: "10-A",
+    email: "sara.toshpulatova@example.com",
+    phone: "+998901234581",
+  },
+  {
+    key: 3,
+    firstName: "John",
+    lastName: "Doe",
+    class: "10-A",
+    email: "john.doe@example.com",
+    phone: "+998901234582",
+  },
+  {
+    key: 4,
+    firstName: "Masha",
+    lastName: "Ivanova",
+    class: "10-A",
+    email: "masha.ivanova@example.com",
+    phone: "+998901234583",
+  },
+  {
+    key: 5,
+    firstName: "James",
+    lastName: "Smith",
+    class: "10-A",
+    email: "james.smith@example.com",
+    phone: "+998901234584",
+  },
+  {
+    key: 6,
+    firstName: "Emma",
+    lastName: "Johnson",
+    class: "10-A",
+    email: "emma.johnson@example.com",
+    phone: "+998901234585",
+  },
+  {
+    key: 7,
+    firstName: "Olga",
+    lastName: "Petrova",
+    class: "10-A",
+    email: "olga.petrova@example.com",
+    phone: "+998901234586",
+  },
+  {
+    key: 8,
+    firstName: "Luca",
+    lastName: "Miller",
+    class: "10-A",
+    email: "luca.miller@example.com",
+    phone: "+998901234587",
+  },
+  {
+    key: 9,
+    firstName: "Sophia",
+    lastName: "Martinez",
+    class: "10-A",
+    email: "sophia.martinez@example.com",
+    phone: "+998901234588",
+  },
+  {
+    key: 10,
+    firstName: "Michael",
+    lastName: "Brown",
+    class: "10-A",
+    email: "michael.brown@example.com",
+    phone: "+998901234589",
+  },
+  {
+    key: 11,
+    firstName: "Anna",
+    lastName: "Davis",
+    class: "10-B",
+    email: "anna.davis@example.com",
+    phone: "+998901234590",
+  },
+  {
+    key: 12,
+    firstName: "Alex",
+    lastName: "Wilson",
+    class: "10-B",
+    email: "alex.wilson@example.com",
+    phone: "+998901234591",
+  },
+  {
+    key: 13,
+    firstName: "Kate",
+    lastName: "Lee",
+    class: "10-B",
+    email: "kate.lee@example.com",
+    phone: "+998901234592",
+  },
+  {
+    key: 14,
+    firstName: "Daniel",
+    lastName: "Walker",
+    class: "10-B",
+    email: "daniel.walker@example.com",
+    phone: "+998901234593",
+  },
+  {
+    key: 15,
+    firstName: "Elena",
+    lastName: "Taylor",
+    class: "10-B",
+    email: "elena.taylor@example.com",
+    phone: "+998901234594",
+  },
+  {
+    key: 16,
+    firstName: "Liam",
+    lastName: "Anderson",
+    class: "10-B",
+    email: "liam.anderson@example.com",
+    phone: "+998901234595",
+  },
+  {
+    key: 17,
+    firstName: "Mia",
+    lastName: "Thomas",
+    class: "10-B",
+    email: "mia.thomas@example.com",
+    phone: "+998901234596",
+  },
+  {
+    key: 18,
+    firstName: "Nikita",
+    lastName: "Kuznetsov",
+    class: "10-B",
+    email: "nikita.kuznetsov@example.com",
+    phone: "+998901234597",
+  },
+  {
+    key: 19,
+    firstName: "Sofia",
+    lastName: "Martins",
+    class: "10-B",
+    email: "sofia.martins@example.com",
+    phone: "+998901234598",
+  },
+  {
+    key: 20,
+    firstName: "David",
+    lastName: "Nguyen",
+    class: "10-B",
+    email: "david.nguyen@example.com",
+    phone: "+998901234599",
+  },
+  {
+    key: 21,
+    firstName: "Natalie",
+    lastName: "Gonzalez",
+    class: "10-C",
+    email: "natalie.gonzalez@example.com",
+    phone: "+998901234600",
+  },
+  {
+    key: 22,
+    firstName: "George",
+    lastName: "Perez",
+    class: "10-C",
+    email: "george.perez@example.com",
+    phone: "+998901234601",
+  },
+  {
+    key: 23,
+    firstName: "Aisha",
+    lastName: "Rodriguez",
+    class: "10-C",
+    email: "aisha.rodriguez@example.com",
+    phone: "+998901234602",
+  },
+  {
+    key: 24,
+    firstName: "Oliver",
+    lastName: "Williams",
+    class: "10-C",
+    email: "oliver.williams@example.com",
+    phone: "+998901234603",
+  },
+  {
+    key: 25,
+    firstName: "Chloe",
+    lastName: "White",
+    class: "10-C",
+    email: "chloe.white@example.com",
+    phone: "+998901234604",
+  },
+  {
+    key: 26,
+    firstName: "Ali",
+    lastName: "Ahmadov",
+    class: "10-D",
+    email: "ali.ahmadov@example.com",
+    phone: "+998901234580",
+  },
+];
+const StudentTable: React.FC = () => {
+  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const filteredData = searchText
-        ? filterData(studentsData, searchText)
-        : studentsData;
-      setStudentsData(filteredData);
-      setLoading(false);
-    }, 1000);
-  }, [searchText, studentsData]);
-
-  useEffect(() => {
-    localStorage.setItem("studentsData", JSON.stringify(studentsData));
-  }, [studentsData]);
-
-  const filterData = (data: DataType[], search: string) => {
-    return data.filter((item) =>
-      Object.values(item).some((value) =>
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      )
-    );
-  };
-
-  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value);
-  };
-
-  const handleClearSearch = () => {
-    setSearchText("");
-  };
-
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const handleDelete = (key: number) => {
-    setStudentsData(studentsData.filter((data) => data.key !== key));
-  };
-
-  const columns: TableColumnsType<DataType> = [
-    { title: "First Name", dataIndex: "firstName", key: "firstName" },
-    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
-    { title: "Subject", dataIndex: "subject", key: "subject" },
-    { title: "Email", dataIndex: "email", key: "email" },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (_, record) => (
-        <Space size="small" style={{ fontSize: 20 }}>
-          <a onClick={() => handleEdit(record)}>
-            <EditOutlined />
-          </a>
-          <a
-            onClick={() => handleDelete(record.key)}
-            style={{ color: "#f5222d" }}>
-            <DeleteOutlined />
-          </a>
-        </Space>
-      ),
-    },
-  ];
-
-  const rowSelection: TableRowSelection<DataType> = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddTeacher({ ...addTeacher, [e.target.name]: e.target.value });
-  };
-
   const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setStudentsData([...studentsData, { ...addTeacher, key: Date.now() }]);
-    setIsModalOpen(false);
-    setAddTeacher({
-      key: Date.now(),
-      firstName: "",
-      lastName: "",
-      subject: "",
-      email: "",
-      phone: "",
-    });
+    setIsModalVisible(true);
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalVisible(false);
+    setEditingStudent(null);
+    form.resetFields(); // Reset form fields on modal close
   };
 
-  const onFinish = (values: any) => {
-    if (currentTeacher) {
-      setStudentsData(
-        studentsData.map((student) =>
-          student.key === currentTeacher.key
-            ? { ...currentTeacher, ...values }
+  const handleAddOrEdit = (values: any) => {
+    if (editingStudent) {
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          student.key === editingStudent.key
+            ? { ...editingStudent, ...values }
             : student
         )
       );
     } else {
-      setStudentsData([...studentsData, { key: Date.now(), ...values }]);
+      const newStudent: Student = {
+        key: students.length + 1, // Key should be a number
+        ...values,
+      };
+      setStudents([...students, newStudent]);
     }
-    setOpen(false);
-    form.resetFields();
+    handleCancel(); // Close the modal and reset form
   };
 
-  const handleEdit = (student: DataType) => {
-    setCurrentTeacher(student);
-    setOpen(true);
-    form.setFieldsValue({
-      firstName: student.firstName,
-      lastName: student.lastName,
-      subject: student.subject,
-      email: student.email,
-      phone: student.phone,
-    });
+  const handleDelete = (key: number) => {
+    setStudents(students.filter((student) => student.key !== key));
   };
 
-  const hasSelected = selectedRowKeys.length > 0;
+  const columns = [
+    {
+      title: "S.No.",
+      dataIndex: "key",
+      key: "key",
+      align: "center" as const,
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: "Class",
+      dataIndex: "class",
+      key: "class",
+      align: "center" as const,
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+      align: "center" as const,
+    },
+    {
+      title: "Action",
+      key: "action",
+      align: "center" as const,
+      render: (_: any, record: Student) => (
+        <span>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingStudent(record);
+              form.setFieldsValue(record); // Set form values for editing
+              showModal();
+            }}
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            style={{ marginLeft: 8 }}
+            onClick={() => handleDelete(record.key)}
+          />
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <div style={{ padding: "24px", backgroundColor: "#fff" }}>
-      <button
-        onClick={showModal}
-        style={{
-          backgroundColor: "#3498db",
-          color: "#fff",
-          padding: "10px",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "16px",
-          transition: "background-color 0.3s ease",
-          border: "none",
-          marginBottom: "10px",
-        }}>
-        O'quvchi qo'shish
-      </button>
-      <div
-        style={{
-          backgroundColor: "#f5f5f5",
-          padding: "10px",
-          borderRadius: "5px",
-          marginBottom: "20px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "10px",
-        }}>
-        <Input
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "none",
-            outline: "none",
-            fontSize: "16px",
-            width: "100%",
-          }}
-          type="text"
-          placeholder="Search"
-          value={searchText}
-          onChange={onSearchChange}
-        />
+    <div className="student-table-container">
+      <div className="table-header">
         <Button
-          onClick={handleClearSearch}
+          type="primary"
+          icon={<FaUserGraduate />}
+          style={{ marginRight: 8 }}
+        >
+          Promote Student
+        </Button>
+        <Button>Download Report</Button>
+        <Button
+          type="primary"
+          onClick={() => {
+            setEditingStudent(null); // Ensure no student is being edited
+            form.resetFields(); // Reset form fields before showing modal
+            showModal();
+          }}
           style={{
-            backgroundColor: "#3498db",
-            color: "#fff",
-            padding: "10px",
-            borderRadius: "5px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: "16px",
-            transition: "background-color 0.3s ease",
-            border: "none",
-          }}>
-          <MdOutlineRestartAlt />
+            float: "right",
+            backgroundColor: "#FFD700",
+            borderColor: "#FFD700",
+          }}
+        >
+          + Add Student
         </Button>
       </div>
-
       <Table
-        rowSelection={rowSelection}
         columns={columns}
-        dataSource={studentsData}
-        pagination={{ pageSize: 5 }}
-        loading={loading}
+        dataSource={students}
+        pagination={false}
+        bordered
+        className="student-table"
+      />
+      <Pagination
+        className="table-pagination"
+        defaultCurrent={1}
+        total={students.length}
+        style={{ textAlign: "center", marginTop: 16 }}
       />
 
       <Modal
-        title="Add Student"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*First Name</label>
-          <Input
-            name="firstName"
-            placeholder="First Name"
-            value={addTeacher.firstName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Last Name</label>
-          <Input
-            name="lastName"
-            placeholder="Last Name"
-            value={addTeacher.lastName}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Subject</label>
-          <Input
-            name="subject"
-            placeholder="Subject"
-            value={addTeacher.subject}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label style={{ marginTop: "10px" }}>*Email</label>
-          <Input
-            name="email"
-            placeholder="Email"
-            value={addTeacher.email}
-            style={{ marginTop: "5px", padding: "10px" }}
-            onChange={handleInputChange}
-          />
-        </div>
-      </Modal>
-
-      <Modal
-        visible={open}
-        title={currentTeacher?.key ? "Edit Teacher" : "Add New Teacher"}
-        onCancel={() => setOpen(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => form.submit()}>
-            Save
-          </Button>,
-        ]}>
+        title={editingStudent ? "Edit Student" : "Add Student"}
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
         <Form
           form={form}
           layout="vertical"
-          name="teacherForm"
-          onFinish={onFinish}>
+          initialValues={editingStudent || {}}
+          onFinish={handleAddOrEdit}
+        >
           <Form.Item
             name="firstName"
             label="First Name"
             rules={[
-              { required: true, message: "Please input the first name!" },
-            ]}>
+              {
+                required: true,
+                message: "Please enter the student's first name",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="lastName"
             label="Last Name"
             rules={[
-              { required: true, message: "Please input the last name!" },
-            ]}>
+              {
+                required: true,
+                message: "Please enter the student's last name",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
-            name="subject"
-            label="Subject"
-            rules={[{ required: true, message: "Please select the subject!" }]}>
-            <Select>
-              <Select.Option value="Math">Math</Select.Option>
-              <Select.Option value="English">English</Select.Option>
-              <Select.Option value="Science">Science</Select.Option>
-            </Select>
+            name="class"
+            label="Class"
+            rules={[{ required: true, message: "Please enter the class" }]}
+          >
+            <Input />
           </Form.Item>
           <Form.Item
             name="email"
             label="Email"
-            rules={[
-              { type: "email", message: "The input is not valid E-mail!" },
-            ]}>
+            rules={[{ required: true, message: "Please enter the email" }]}
+          >
             <Input />
           </Form.Item>
           <Form.Item name="phone" label="Phone">
             <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              {editingStudent ? "Update" : "Add"}
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
+              Cancel
+            </Button>
           </Form.Item>
         </Form>
       </Modal>
@@ -335,4 +430,4 @@ const Oquvchilar: React.FC = () => {
   );
 };
 
-export default Oquvchilar;
+export default StudentTable;

@@ -1,0 +1,35 @@
+.student-table-container {
+  padding: 16px;
+  background-color: #f8f8f8;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.status-active {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-inactive {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.student-table {
+  background-color: white;
+}
+
+.table-pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.ant-btn {
+  margin-left: 8px;
+}

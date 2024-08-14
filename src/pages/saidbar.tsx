@@ -26,6 +26,9 @@ const App: React.FC = () => {
       <Sider trigger={null} collapsible collapsed={collapsed} width={250}>
         <div className="sidebar-profile">
           <img
+            style={{
+              cursor: "pointer",
+            }}
             src="https://i.pinimg.com/564x/77/df/cc/77dfcca14d6d45f11b95a11e98a5cf1e.jpg"
             alt="User"
             className="profile-img"
