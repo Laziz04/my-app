@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu } from "antd";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { GiTeacher } from "react-icons/gi";
@@ -14,19 +14,27 @@ import Otaonalar from "./Otaonalar";
 import Siniflar from "./classes";
 import Oqituvchilar from "./teachers";
 import Jurnal from "./journal";
+import "../App.css"; // Add custom styles
 
 const { Header, Sider, Content } = Layout;
 
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   return (
     <Layout style={{ height: "97vh" }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" />
+      <Sider trigger={null} collapsible collapsed={collapsed} width={250}>
+        <div className="sidebar-profile">
+          <img
+            src="https://i.pinimg.com/564x/77/df/cc/77dfcca14d6d45f11b95a11e98a5cf1e.jpg"
+            alt="User"
+            className="profile-img"
+          />
+          <div className="profile-info">
+            <p>FullName</p>
+            <div className="stars">⭐⭐⭐⭐</div>
+          </div>
+        </div>
         <Menu
           theme="dark"
           mode="inline"
@@ -35,7 +43,7 @@ const App: React.FC = () => {
             {
               key: "1",
               icon: <FaHome className="h-6 w-6" />,
-              label: <Link to="/">O'quv yillari</Link>,
+              label: <Link to="/">Home</Link>,
             },
             {
               key: "2",
@@ -64,9 +72,10 @@ const App: React.FC = () => {
             },
           ]}
         />
+        <Button className="logout-btn">out</Button>
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ padding: 0, background: "#fff" }}>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -83,9 +92,10 @@ const App: React.FC = () => {
             margin: "24px 16px",
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}>
+            background: "#fff",
+            borderRadius: "8px",
+          }}
+        >
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/O'qituvchilar" element={<Oqituvchilar />} />
