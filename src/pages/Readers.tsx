@@ -225,11 +225,13 @@ const initialStudents: Student[] = [
     phone: "+998901234580",
   },
 ];
+
 const StudentTable: React.FC = () => {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [form] = Form.useForm();
+  const [current, setCurrent] = useState(1); // To track current page
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -252,7 +254,7 @@ const StudentTable: React.FC = () => {
       );
     } else {
       const newStudent: Student = {
-        key: students.length + 1, // Key should be a number
+        key: students.length + 1,
         ...values,
       };
       setStudents([...students, newStudent]);
@@ -264,6 +266,10 @@ const StudentTable: React.FC = () => {
     setStudents(students.filter((student) => student.key !== key));
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrent(page);
+  };
+
   const columns = [
     {
       title: "S.No.",
@@ -272,14 +278,9 @@ const StudentTable: React.FC = () => {
       align: "center" as const,
     },
     {
-      title: "First Name",
+      title: "Student Name",
       dataIndex: "firstName",
       key: "firstName",
-    },
-    {
-      title: "Last Name",
-      dataIndex: "lastName",
-      key: "lastName",
     },
     {
       title: "Class",
@@ -351,15 +352,17 @@ const StudentTable: React.FC = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={students}
+        dataSource={students.slice((current - 1) * 5, current * 5)} // Show 5 items per page
         pagination={false}
         bordered
         className="student-table"
       />
       <Pagination
         className="table-pagination"
-        defaultCurrent={1}
+        current={current}
+        pageSize={5}
         total={students.length}
+        onChange={handlePageChange}
         style={{ textAlign: "center", marginTop: 16 }}
       />
 
@@ -377,24 +380,9 @@ const StudentTable: React.FC = () => {
         >
           <Form.Item
             name="firstName"
-            label="First Name"
+            label="Student Name"
             rules={[
-              {
-                required: true,
-                message: "Please enter the student's first name",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="lastName"
-            label="Last Name"
-            rules={[
-              {
-                required: true,
-                message: "Please enter the student's last name",
-              },
+              { required: true, message: "Please enter the student's name" },
             ]}
           >
             <Input />
@@ -413,8 +401,24 @@ const StudentTable: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Phone">
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[
+              { required: true, message: "Please enter the phone number" },
+            ]}
+          >
             <Input />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            label="Status"
+            rules={[{ required: true, message: "Please select the status" }]}
+          >
+            <Select>
+              <Option value="Active">Active</Option>
+              <Option value="Inactive">Inactive</Option>
+            </Select>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
