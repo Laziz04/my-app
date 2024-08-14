@@ -225,9 +225,9 @@ const initialStudents: Student[] = [
     phone: "+998901234580",
   },
 ];
-
 const StudentTable: React.FC = () => {
   const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [filteredClass, setFilteredClass] = useState<string | null>(null); // State to manage selected class
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [form] = Form.useForm();
@@ -268,6 +268,11 @@ const StudentTable: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrent(page);
+  };
+
+  const handleClassChange = (value: string) => {
+    setFilteredClass(value);
+    setCurrent(1); // Reset to first page when filter changes
   };
 
   const columns = [
@@ -323,6 +328,10 @@ const StudentTable: React.FC = () => {
     },
   ];
 
+  const filteredStudents = filteredClass
+    ? students.filter((student) => student.class === filteredClass)
+    : students;
+
   return (
     <div className="student-table-container">
       <div className="table-header">
@@ -334,6 +343,18 @@ const StudentTable: React.FC = () => {
           Promote Student
         </Button>
         <Button>Download Report</Button>
+        <Select
+          style={{ width: 200, marginRight: 16 }}
+          placeholder="Select Class"
+          onChange={handleClassChange}
+          value={filteredClass || undefined}
+        >
+          <Option value={null}>All Classes</Option>
+          <Option value="10-A">10-A</Option>
+          <Option value="10-B">10-B</Option>
+          <Option value="10-C">10-C</Option>
+          <Option value="10-D">10-D</Option>
+        </Select>
         <Button
           type="primary"
           onClick={() => {
@@ -352,7 +373,7 @@ const StudentTable: React.FC = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={students.slice((current - 1) * 5, current * 5)} // Show 5 items per page
+        dataSource={filteredStudents.slice((current - 1) * 5, current * 5)} // Show 5 items per page
         pagination={false}
         bordered
         className="student-table"
@@ -361,7 +382,7 @@ const StudentTable: React.FC = () => {
         className="table-pagination"
         current={current}
         pageSize={5}
-        total={students.length}
+        total={filteredStudents.length}
         onChange={handlePageChange}
         style={{ textAlign: "center", marginTop: 16 }}
       />
