@@ -140,8 +140,7 @@ const Oqituvchilar: React.FC = () => {
           transition: "background-color 0.3s ease",
           border: "none",
           marginBottom: "10px",
-        }}
-      >
+        }}>
         Sinf qo'shish
       </Button>
       <div
@@ -154,8 +153,7 @@ const Oqituvchilar: React.FC = () => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "10px",
-        }}
-      >
+        }}>
         <Input
           style={{
             padding: "10px",
@@ -182,8 +180,7 @@ const Oqituvchilar: React.FC = () => {
             fontSize: "16px",
             transition: "background-color 0.3s ease",
             border: "none",
-          }}
-        >
+          }}>
           <MdOutlineRestartAlt />
         </Button>
       </div>
@@ -200,8 +197,7 @@ const Oqituvchilar: React.FC = () => {
         title="Sinf qo'shish"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
-      >
+        onCancel={handleCancel}>
         <div style={{ marginTop: "10px" }}>
           <label>*Teacher Name</label>
           <Input
@@ -235,28 +231,26 @@ const Oqituvchilar: React.FC = () => {
           <Button key="submit" type="primary" onClick={() => form.submit()}>
             Save
           </Button>,
-        ]}
-      >
+        ]}>
         <Form
           form={form}
           layout="vertical"
           name="teacherForm"
-          onFinish={onFinish}
-        >
+          onFinish={onFinish}>
           <Form.Item
             name="teacherName"
             label="Teacher"
             rules={[
               { required: true, message: "Please input the teacher's name!" },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="sinf"
             label="Sinf name"
-            rules={[{ required: true, message: "Please input the sinf name!" }]}
-          >
+            rules={[
+              { required: true, message: "Please input the sinf name!" },
+            ]}>
             <Input />
           </Form.Item>
         </Form>

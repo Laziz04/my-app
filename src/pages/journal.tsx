@@ -1,4 +1,3 @@
-import React from "react";
 import "./dwd.css";
 
 const Jurnal = () => {

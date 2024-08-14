@@ -14,17 +14,17 @@ const initialData: DataType[] = [
   {
     key: "1",
     OquvYili: "2019-2020",
-    tanlash: "Select",
+    tanlash: "Ali",
   },
   {
     key: "2",
     OquvYili: "2020-2021",
-    tanlash: "Select",
+    tanlash: "Ali",
   },
   {
     key: "3",
     OquvYili: "2021-2022",
-    tanlash: "Select",
+    tanlash: "Ali",
   },
 ];
 
@@ -35,9 +35,9 @@ const Dashboard: React.FC = () => {
     undefined
   );
   const [data, setData] = useState<DataType[]>(initialData);
+  const [editingKey, setEditingKey] = useState<React.Key | null>(null);
 
   useEffect(() => {
-    // Load data from localStorage when the component mounts
     const storedData = localStorage.getItem("tableData");
     if (storedData) {
       setData(JSON.parse(storedData));
@@ -45,7 +45,6 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Save data to localStorage whenever data changes
     localStorage.setItem("tableData", JSON.stringify(data));
   }, [data]);
 
@@ -55,35 +54,50 @@ const Dashboard: React.FC = () => {
 
   const handleOk = () => {
     if (selectedYear) {
-      const newData = [
-        ...data,
-        {
-          key: (data.length + 1).toString(),
-          OquvYili: selectedYear,
-          tanlash: "Select",
-        },
-      ];
-      setData(newData);
+      if (editingKey !== null) {
+        // Edit existing entry
+        const newData = data.map((item) =>
+          item.key === editingKey ? { ...item, OquvYili: selectedYear } : item
+        );
+        setData(newData);
+        setEditingKey(null);
+      } else {
+        // Add new entry
+        const newData = [
+          ...data,
+          {
+            key: (data.length + 1).toString(),
+            OquvYili: selectedYear,
+            tanlash: "Ali",
+          },
+        ];
+        setData(newData);
+      }
       setSelectedYear(undefined);
     }
     setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
+    setOpen(false);
+    setConfirmLoading(false);
   };
 
   const handleCancel = () => {
-    console.log("Clicked cancel button");
     setOpen(false);
+    setEditingKey(null);
   };
 
   const handleSelectChange = (value: string) => {
     setSelectedYear(value);
   };
+
   const handleDelete = (key: React.Key) => {
     const newData = data.filter((item) => item.key !== key);
     setData(newData);
+  };
+
+  const handleEdit = (record: DataType) => {
+    setSelectedYear(record.OquvYili);
+    setEditingKey(record.key);
+    setOpen(true);
   };
 
   return (
@@ -93,8 +107,7 @@ const Dashboard: React.FC = () => {
           margin: "10px",
           fontSize: "20px",
           fontWeight: "bold",
-        }}
-      >
+        }}>
         O'quv yillari
       </h1>
 
@@ -104,38 +117,19 @@ const Dashboard: React.FC = () => {
             margin: "10px",
           }}
           type="primary"
-          onClick={showModal}
-        >
+          onClick={showModal}>
           Yangi o'quv yili qo'shish
         </Button>
       </div>
 
       <Modal
-        title="Title"
+        title={
+          editingKey ? "O'quv yilini o'zgartirish" : "Yangi o'quv yili qo'shish"
+        }
         open={open}
         onOk={handleOk}
         confirmLoading={confirmLoading}
-        onCancel={handleCancel}
-      >
-        <select
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            height: "50px",
-            width: "200px",
-          }}
-          value={selectedYear}
-          onChange={(e) => handleSelectChange(e.target.value)}
-        >
-          <option value="">Select a year</option>
-          <option value="2019-2020">2019-2020</option>
-          <option value="2020-2021">2020-2021</option>
-          <option value="2021-2022">2021-2022</option>
-          <option value="2022-2023">2022-2023</option>
-          <option value="2023-2024">2023-2024</option>
-          <option value="2024-2025">2024-2025</option>
-        </select>
-      </Modal>
+        onCancel={handleCancel}></Modal>
 
       <Table dataSource={data} rowKey="key">
         <Column title="O'quv Yili" dataIndex="OquvYili" key="OquvYili" />
@@ -145,13 +139,12 @@ const Dashboard: React.FC = () => {
           key="action"
           render={(_: any, record: DataType) => (
             <Space size="small" style={{ fontSize: 20 }}>
-              <a>
+              <a onClick={() => handleEdit(record)}>
                 <EditOutlined />
               </a>
               <a
                 onClick={() => handleDelete(record.key)}
-                style={{ color: "#f5222d" }}
-              >
+                style={{ color: "#f5222d" }}>
                 <DeleteOutlined />
               </a>
             </Space>

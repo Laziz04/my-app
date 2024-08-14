@@ -3,6 +3,7 @@ import { Button, Table, Space, Input, Modal, Form, Select } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { studentData } from "./datas/teacherData";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
@@ -20,7 +21,7 @@ const Oquvchilar: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [studentsData, setStudentsData] = useState<DataType[]>(() => {
     const storedData = localStorage.getItem("studentsData");
-    return storedData ? JSON.parse(storedData) : studentData; // studentData o'rniga teacherData
+    return storedData ? JSON.parse(storedData) : studentData;
   });
   const [searchText, setSearchText] = useState("");
   const [addTeacher, setAddTeacher] = useState<DataType>({
@@ -42,14 +43,14 @@ const Oquvchilar: React.FC = () => {
     setTimeout(() => {
       const filteredData = searchText
         ? filterData(studentsData, searchText)
-        : studentsData; // studentData o'rniga studentsData
+        : studentsData;
       setStudentsData(filteredData);
       setLoading(false);
     }, 1000);
-  }, [searchText, studentsData]); // studentsData qo'shilgan
+  }, [searchText, studentsData]);
 
   useEffect(() => {
-    localStorage.setItem("studentsData", JSON.stringify(studentsData)); // studentData o'rniga studentsData
+    localStorage.setItem("studentsData", JSON.stringify(studentsData));
   }, [studentsData]);
 
   const filterData = (data: DataType[], search: string) => {
@@ -86,9 +87,15 @@ const Oquvchilar: React.FC = () => {
       dataIndex: "phone",
       key: "phone",
       render: (_, record) => (
-        <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button onClick={() => handleDelete(record.key)}>Delete</Button>
+        <Space size="small" style={{ fontSize: 20 }}>
+          <a onClick={() => handleEdit(record)}>
+            <EditOutlined />
+          </a>
+          <a
+            onClick={() => handleDelete(record.key)}
+            style={{ color: "#f5222d" }}>
+            <DeleteOutlined />
+          </a>
         </Space>
       ),
     },
@@ -168,8 +175,7 @@ const Oquvchilar: React.FC = () => {
           transition: "background-color 0.3s ease",
           border: "none",
           marginBottom: "10px",
-        }}
-      >
+        }}>
         O'quvchi qo'shish
       </button>
       <div
@@ -182,8 +188,7 @@ const Oquvchilar: React.FC = () => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "10px",
-        }}
-      >
+        }}>
         <Input
           style={{
             padding: "10px",
@@ -210,8 +215,7 @@ const Oquvchilar: React.FC = () => {
             fontSize: "16px",
             transition: "background-color 0.3s ease",
             border: "none",
-          }}
-        >
+          }}>
           <MdOutlineRestartAlt />
         </Button>
       </div>
@@ -228,8 +232,7 @@ const Oquvchilar: React.FC = () => {
         title="Add Student"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
-      >
+        onCancel={handleCancel}>
         <div style={{ marginTop: "10px" }}>
           <label style={{ marginTop: "10px" }}>*First Name</label>
           <Input
@@ -283,35 +286,32 @@ const Oquvchilar: React.FC = () => {
           <Button key="submit" type="primary" onClick={() => form.submit()}>
             Save
           </Button>,
-        ]}
-      >
+        ]}>
         <Form
           form={form}
           layout="vertical"
           name="teacherForm"
-          onFinish={onFinish}
-        >
+          onFinish={onFinish}>
           <Form.Item
             name="firstName"
             label="First Name"
             rules={[
               { required: true, message: "Please input the first name!" },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="lastName"
             label="Last Name"
-            rules={[{ required: true, message: "Please input the last name!" }]}
-          >
+            rules={[
+              { required: true, message: "Please input the last name!" },
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="subject"
             label="Subject"
-            rules={[{ required: true, message: "Please select the subject!" }]}
-          >
+            rules={[{ required: true, message: "Please select the subject!" }]}>
             <Select>
               <Select.Option value="Math">Math</Select.Option>
               <Select.Option value="English">English</Select.Option>
@@ -323,8 +323,7 @@ const Oquvchilar: React.FC = () => {
             label="Email"
             rules={[
               { type: "email", message: "The input is not valid E-mail!" },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item name="phone" label="Phone">

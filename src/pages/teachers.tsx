@@ -3,6 +3,7 @@ import { Button, Table, Space, Input, Modal, Form, Select } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { dataSource } from "./datas/teacherData";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
@@ -87,9 +88,15 @@ const Oqituvchilar: React.FC = () => {
       dataIndex: "phone",
       key: "phone",
       render: (_, record) => (
-        <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button onClick={() => handleDelete(record.key)}>Delete</Button>
+        <Space size="small" style={{ fontSize: 20 }}>
+          <a onClick={() => handleEdit(record)}>
+            <EditOutlined />
+          </a>
+          <a
+            onClick={() => handleDelete(record.key)}
+            style={{ color: "#f5222d" }}>
+            <DeleteOutlined />
+          </a>
         </Space>
       ),
     },
@@ -169,8 +176,7 @@ const Oqituvchilar: React.FC = () => {
           transition: "background-color 0.3s ease",
           border: "none",
           marginBottom: "10px",
-        }}
-      >
+        }}>
         O'qituvchi qo'shish
       </button>
       <div
@@ -183,8 +189,7 @@ const Oqituvchilar: React.FC = () => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "10px",
-        }}
-      >
+        }}>
         <Input
           style={{
             padding: "10px",
@@ -211,8 +216,7 @@ const Oqituvchilar: React.FC = () => {
             fontSize: "16px",
             transition: "background-color 0.3s ease",
             border: "none",
-          }}
-        >
+          }}>
           <MdOutlineRestartAlt />
         </Button>
       </div>
@@ -229,8 +233,7 @@ const Oqituvchilar: React.FC = () => {
         title="Add Teacher"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
-      >
+        onCancel={handleCancel}>
         <div style={{ marginTop: "10px" }}>
           <label style={{ marginTop: "10px" }}>*First Name</label>
           <Input
@@ -284,35 +287,32 @@ const Oqituvchilar: React.FC = () => {
           <Button key="submit" type="primary" onClick={() => form.submit()}>
             Save
           </Button>,
-        ]}
-      >
+        ]}>
         <Form
           form={form}
           layout="vertical"
           name="teacherForm"
-          onFinish={onFinish}
-        >
+          onFinish={onFinish}>
           <Form.Item
             name="firstName"
             label="First Name"
             rules={[
               { required: true, message: "Please input the first name!" },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="lastName"
             label="Last Name"
-            rules={[{ required: true, message: "Please input the last name!" }]}
-          >
+            rules={[
+              { required: true, message: "Please input the last name!" },
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="subject"
             label="Subject"
-            rules={[{ required: true, message: "Please select the subject!" }]}
-          >
+            rules={[{ required: true, message: "Please select the subject!" }]}>
             <Select>
               <Select.Option value="Math">Math</Select.Option>
               <Select.Option value="English">English</Select.Option>
@@ -324,8 +324,7 @@ const Oqituvchilar: React.FC = () => {
             label="Email"
             rules={[
               { type: "email", message: "The input is not valid E-mail!" },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item name="phone" label="Phone">

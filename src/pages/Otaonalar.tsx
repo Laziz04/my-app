@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Table, Space, Input, Modal, Form } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { MdOutlineRestartAlt } from "react-icons/md";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 interface ParentDataType {
   key: number;
@@ -249,9 +250,15 @@ const OtaOnalar: React.FC = () => {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button onClick={() => handleDelete(record.key)}>Delete</Button>
+        <Space size="small" style={{ fontSize: 20 }}>
+          <a onClick={() => handleEdit(record)}>
+            <EditOutlined />
+          </a>
+          <a
+            onClick={() => handleDelete(record.key)}
+            style={{ color: "#f5222d" }}>
+            <DeleteOutlined />
+          </a>
         </Space>
       ),
     },
@@ -323,8 +330,7 @@ const OtaOnalar: React.FC = () => {
         onClick={showModal}
         style={{
           marginBottom: "10px",
-        }}
-      >
+        }}>
         Add Parent
       </Button>
       <div
@@ -336,8 +342,7 @@ const OtaOnalar: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-        }}
-      >
+        }}>
         <Input
           type="text"
           placeholder="Search"
@@ -361,8 +366,7 @@ const OtaOnalar: React.FC = () => {
             cursor: "pointer",
             fontSize: "16px",
             transition: "background-color 0.3s ease",
-          }}
-        >
+          }}>
           <MdOutlineRestartAlt />
         </Button>
       </div>
@@ -379,14 +383,12 @@ const OtaOnalar: React.FC = () => {
         title="Add Parent"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
-      >
+        onCancel={handleCancel}>
         <Form layout="vertical">
           <Form.Item
             label="Parent First Name"
             required
-            style={{ marginTop: "10px" }}
-          >
+            style={{ marginTop: "10px" }}>
             <Input
               name="firstName"
               placeholder="Parent First Name"
@@ -397,8 +399,7 @@ const OtaOnalar: React.FC = () => {
           <Form.Item
             label="Parent Last Name"
             required
-            style={{ marginTop: "10px" }}
-          >
+            style={{ marginTop: "10px" }}>
             <Input
               name="lastName"
               placeholder="Parent Last Name"
@@ -409,8 +410,7 @@ const OtaOnalar: React.FC = () => {
           <Form.Item
             label="Child's Name"
             required
-            style={{ marginTop: "10px" }}
-          >
+            style={{ marginTop: "10px" }}>
             <Input
               name="childName"
               placeholder="Child's Name"
@@ -421,8 +421,7 @@ const OtaOnalar: React.FC = () => {
           <Form.Item
             label="Child's Class"
             required
-            style={{ marginTop: "10px" }}
-          >
+            style={{ marginTop: "10px" }}>
             <Input
               name="childClass"
               placeholder="Child's Class"
@@ -433,8 +432,7 @@ const OtaOnalar: React.FC = () => {
           <Form.Item
             label="Child's Teacher"
             required
-            style={{ marginTop: "10px" }}
-          >
+            style={{ marginTop: "10px" }}>
             <Input
               name="childTeacher"
               placeholder="Child's Teacher"
@@ -456,14 +454,12 @@ const OtaOnalar: React.FC = () => {
           <Button key="submit" type="primary" onClick={() => form.submit()}>
             Save
           </Button>,
-        ]}
-      >
+        ]}>
         <Form
           form={form}
           layout="vertical"
           name="parentForm"
-          onFinish={onFinish}
-        >
+          onFinish={onFinish}>
           <Form.Item
             name="firstName"
             label="Parent First Name"
@@ -472,8 +468,7 @@ const OtaOnalar: React.FC = () => {
                 required: true,
                 message: "Please input the parent's first name!",
               },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
@@ -484,8 +479,7 @@ const OtaOnalar: React.FC = () => {
                 required: true,
                 message: "Please input the parent's last name!",
               },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
@@ -496,8 +490,7 @@ const OtaOnalar: React.FC = () => {
                 required: true,
                 message: "Please input the child's name!",
               },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
@@ -508,8 +501,7 @@ const OtaOnalar: React.FC = () => {
                 required: true,
                 message: "Please input the child's class!",
               },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
           <Form.Item
@@ -520,8 +512,7 @@ const OtaOnalar: React.FC = () => {
                 required: true,
                 message: "Please input the child's teacher!",
               },
-            ]}
-          >
+            ]}>
             <Input />
           </Form.Item>
         </Form>
