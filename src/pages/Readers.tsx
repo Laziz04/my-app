@@ -1,94 +1,222 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag } from "antd";
-import type { TableProps } from "antd";
+import { Form, Input, Space, Table, Tag, Button, Drawer, message } from "antd";
 import axios from "axios";
 
+const { Column, ColumnGroup } = Table;
+
 interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
+  id: number;
+  key: React.Key;
+  firstName: string;
+  lastName: string;
+  className: string;
+  studentemail: string;
+  studentphone: string;
+  teachername?: string;
+  teacherlastname?: string;
+  subject?: string;
+  teacheremail?: string;
+  teacherphone?: string;
 }
 
-const StudentTable: React.FC = () => {
+const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [srekord, setserekord] = useState<DataType | null>(null);
+
+  const showDrawer = (rekord: DataType | null = null) => {
+    setserekord(rekord);
+    form.resetFields();
+    if (rekord) {
+      form.setFieldsValue({
+        firstName: rekord.firstName,
+        lastName: rekord.lastName,
+        className: rekord.className,
+        studentemail: rekord.studentemail,
+        studentphone: rekord.studentphone,
+        teachername: rekord.teachername,
+        teacherlastname: rekord.teacherlastname,
+        subject: rekord.subject,
+        teacheremail: rekord.teacheremail,
+        teacherphone: rekord.teacherphone,
+      });
+    }
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+    form.resetFields();
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "https://c7bdff0b28aa98c1.mokky.dev/student"
-        );
-        const students = response.data.map((student: any, index: number) => ({
-          key: index.toString(),
-          name: student.name,
-          age: student.age,
-          address: student.address,
-          tags: student.tags || [],
+    axios
+      .get("https://c7bdff0b28aa98c1.mokky.dev/student")
+      .then((res) => {
+        const formattedData = res.data.slice(0, 5).map((item: any) => ({
+          id: item.id,
+          key: item.id,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          className: item.className,
+          studentemail: item.studentemail,
+          studentphone: item.studentphone,
+          teachername: item.teachername,
+          teacherlastname: item.teacherlastname,
+          subject: item.subject,
+          teacheremail: item.teacheremail,
+          teacherphone: item.teacherphone,
         }));
-        setData(students);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+        setData(formattedData);
+      })
+      .catch((error) => {
+        console.error("Ma'lumotlarni olishda xato:", error);
+      });
   }, []);
 
-  const columns: TableProps<DataType>["columns"] = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-          <a>Delete</a>
-        </Space>
-      ),
-    },
-  ];
+  const delet = (id: number) => {
+    axios
+      .delete(`https://c7bdff0b28aa98c1.mokky.dev/student/${id}`)
+      .then(() => {
+        setData((prevData) => prevData.filter((item) => item.id !== id));
+      })
+      .catch((error) => {
+        console.error("Ma'lumotlarni o'chirishda xato:", error);
+      });
+  };
 
-  return <Table columns={columns} dataSource={data} loading={loading} />;
+  const submit = (values: any) => {
+    if (srekord) {
+      // Tahrirlash
+      axios
+        .patch(
+          `https://c7bdff0b28aa98c1.mokky.dev/student/${srekord.id}`,
+          values
+        )
+        .then(() => {
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === srekord.id ? { ...item, ...values } : item
+            )
+          );
+          message.success("Ma'lumotlar muvaffaqiyatli tahrirlandi");
+          onClose();
+        })
+        .catch((error) => {
+          console.error("Tahrirlashda xato:", error);
+          message.error("Tahrirlashda xato yuz berdi");
+        });
+    } else {
+      // Yangi yozuv qo'shish
+      axios
+        .post("https://c7bdff0b28aa98c1.mokky.dev/student", values)
+        .then((res) => {
+          setData((prevData) => [
+            ...prevData,
+            { ...res.data, key: res.data.id },
+          ]);
+          message.success("Yangi yozuv muvaffaqiyatli qo'shildi");
+          onClose();
+        })
+        .catch((error) => {
+          console.error("Yozuv qo'shishda xato:", error);
+          message.error("Yozuv qo'shishda xato yuz berdi");
+        });
+    }
+  };
+
+  return (
+    <>
+      <Button type="primary" onClick={() => showDrawer()}>
+        Create
+      </Button>
+      <Table dataSource={data} style={{ marginTop: 20 }}>
+        <ColumnGroup title="Student Information">
+          <Column title="First Name" dataIndex="firstName" key="firstName" />
+          <Column title="Last Name" dataIndex="lastName" key="lastName" />
+          <Column title="Class" dataIndex="className" key="className" />
+          <Column title="Phone" dataIndex="studentphone" key="studentphone" />
+          <Column
+            title="Teacher Name"
+            dataIndex="teachername"
+            key="teachername"
+          />
+        </ColumnGroup>
+        <Column
+          title="Action"
+          key="action"
+          render={(_: any, record: DataType) => (
+            <Space size="middle">
+              <a href="#" onClick={() => showDrawer(record)}>
+                Tahrirlash
+              </a>
+              <a href="#" onClick={() => delet(record.id)}>
+                O'chirish
+              </a>
+            </Space>
+          )}
+        />
+      </Table>
+      <Drawer
+        title={srekord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"}
+        onClose={onClose}
+        open={open}
+        footer={
+          <div style={{ textAlign: "right" }}>
+            <Button onClick={onClose} style={{ marginRight: 8 }}>
+              Bekor qilish
+            </Button>
+            <Button
+              onClick={() =>
+                form
+                  .validateFields()
+                  .then(submit)
+                  .catch(() => message.error("Formada xatolik bor"))
+              }
+              type="primary"
+            >
+              Saqlash
+            </Button>
+          </div>
+        }
+      >
+        <Form form={form} layout="vertical" onFinish={submit}>
+          <Form.Item
+            label="First Name"
+            name="firstName"
+            rules={[{ required: true, message: "First Name kiriting!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Last Name"
+            name="lastName"
+            rules={[{ required: true, message: "Last Name kiriting!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Class"
+            name="className"
+            rules={[{ required: true, message: "Class kiriting!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Phone"
+            name="studentphone"
+            rules={[{ required: true, message: "Phone kiriting!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label="Teacher Name" name="teachername">
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
+  );
 };
 
-export default StudentTable;
+export default App;

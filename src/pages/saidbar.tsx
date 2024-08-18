@@ -35,7 +35,7 @@ const App: React.FC = () => {
           />
           <div className="profile-info">
             <p>FullName</p>
-            <div className="stars">⭐⭐⭐⭐</div>
+            <div className="stars">⭐⭐⭐</div>
           </div>
         </div>
         <Menu
