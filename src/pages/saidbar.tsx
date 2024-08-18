@@ -11,7 +11,6 @@ import { FaBookBookmark } from "react-icons/fa6";
 import Dashboard from "./dashboard";
 import Oquvchilar from "./Readers";
 import Otaonalar from "./Otaonalar";
-import Siniflar from "./classes";
 import Oqituvchilar from "./teachers";
 import Jurnal from "./journal";
 import "../App.css"; // Add custom styles
@@ -55,21 +54,16 @@ const App: React.FC = () => {
             },
             {
               key: "3",
-              icon: <PiStudentFill className="h-6 w-6" />,
-              label: <Link to="/Siniflar">Siniflar</Link>,
-            },
-            {
-              key: "4",
               icon: <BsFillPeopleFill className="h-6 w-6" />,
               label: <Link to="/O'quvchilar">O'quvchilar</Link>,
             },
             {
-              key: "5",
+              key: "4",
               icon: <RiParentFill className="h-6 w-6" />,
               label: <Link to="/Otaonalar">Ota onalar</Link>,
             },
             {
-              key: "7",
+              key: "5",
               icon: <FaBookBookmark className="h-6 w-6" />,
               label: <Link to="/Jurnal">Jurnal</Link>,
             },
@@ -102,7 +96,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/O'qituvchilar" element={<Oqituvchilar />} />
-            <Route path="/Siniflar" element={<Siniflar />} />
             <Route path="/O'quvchilar" element={<Oquvchilar />} />
             <Route path="/Otaonalar" element={<Otaonalar />} />
             <Route path="/Jurnal" element={<Jurnal />} />

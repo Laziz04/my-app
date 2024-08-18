@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Space, Table, Tag, Button, Drawer, message } from "antd";
+import {
+  Form,
+  Input,
+  Space,
+  Table,
+  Button,
+  Drawer,
+  message,
+  Select,
+} from "antd";
 import axios from "axios";
 
 const { Column, ColumnGroup } = Table;
+const { Option } = Select;
 
 interface DataType {
   id: number;
@@ -19,27 +29,29 @@ interface DataType {
   teacherphone?: string;
 }
 
+interface Teacher {
+  id: number;
+  name: string;
+}
+
 const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  const [srekord, setserekord] = useState<DataType | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
 
-  const showDrawer = (rekord: DataType | null = null) => {
-    setserekord(rekord);
+  const showDrawer = (record: DataType | null = null) => {
+    setSelectedRecord(record);
     form.resetFields();
-    if (rekord) {
+    if (record) {
       form.setFieldsValue({
-        firstName: rekord.firstName,
-        lastName: rekord.lastName,
-        className: rekord.className,
-        studentemail: rekord.studentemail,
-        studentphone: rekord.studentphone,
-        teachername: rekord.teachername,
-        teacherlastname: rekord.teacherlastname,
-        subject: rekord.subject,
-        teacheremail: rekord.teacheremail,
-        teacherphone: rekord.teacherphone,
+        firstName: record.firstName,
+        lastName: record.lastName,
+        className: record.className,
+        studentemail: record.studentemail,
+        studentphone: record.studentphone,
+        teachername: record.teachername,
       });
     }
     setOpen(true);
@@ -51,6 +63,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // Fetch student data
     axios
       .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
@@ -73,9 +86,23 @@ const App: React.FC = () => {
       .catch((error) => {
         console.error("Ma'lumotlarni olishda xato:", error);
       });
+
+    // Fetch teacher names
+    axios
+      .get("https://c7bdff0b28aa98c1.mokky.dev/teachers") // Adjust URL as needed
+      .then((res) => {
+        const teacherData = res.data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+        }));
+        setTeachers(teacherData);
+      })
+      .catch((error) => {
+        console.error("O'qituvchilarni olishda xato:", error);
+      });
   }, []);
 
-  const delet = (id: number) => {
+  const deleteRecord = (id: number) => {
     axios
       .delete(`https://c7bdff0b28aa98c1.mokky.dev/student/${id}`)
       .then(() => {
@@ -87,17 +114,17 @@ const App: React.FC = () => {
   };
 
   const submit = (values: any) => {
-    if (srekord) {
-      // Tahrirlash
+    if (selectedRecord) {
+      // Update existing record
       axios
         .patch(
-          `https://c7bdff0b28aa98c1.mokky.dev/student/${srekord.id}`,
+          `https://c7bdff0b28aa98c1.mokky.dev/student/${selectedRecord.id}`,
           values
         )
         .then(() => {
           setData((prevData) =>
             prevData.map((item) =>
-              item.id === srekord.id ? { ...item, ...values } : item
+              item.id === selectedRecord.id ? { ...item, ...values } : item
             )
           );
           message.success("Ma'lumotlar muvaffaqiyatli tahrirlandi");
@@ -108,7 +135,7 @@ const App: React.FC = () => {
           message.error("Tahrirlashda xato yuz berdi");
         });
     } else {
-      // Yangi yozuv qo'shish
+      // Add new record
       axios
         .post("https://c7bdff0b28aa98c1.mokky.dev/student", values)
         .then((res) => {
@@ -151,7 +178,7 @@ const App: React.FC = () => {
               <a href="#" onClick={() => showDrawer(record)}>
                 Tahrirlash
               </a>
-              <a href="#" onClick={() => delet(record.id)}>
+              <a href="#" onClick={() => deleteRecord(record.id)}>
                 O'chirish
               </a>
             </Space>
@@ -159,7 +186,9 @@ const App: React.FC = () => {
         />
       </Table>
       <Drawer
-        title={srekord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"}
+        title={
+          selectedRecord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"
+        }
         onClose={onClose}
         open={open}
         footer={
@@ -210,8 +239,18 @@ const App: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Teacher Name" name="teachername">
-            <Input />
+          <Form.Item
+            label="Teacher Name"
+            name="teachername"
+            rules={[{ required: true, message: "Teacher Name tanlang!" }]}
+          >
+            <Select placeholder="Select Teacher">
+              {teachers.map((teacher) => (
+                <Option key={teacher.id} value={teacher.name}>
+                  {teacher.name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Drawer>
