@@ -1,6 +1,25 @@
 import React, { useEffect, useState } from "react";
-import Chart from "react-apexcharts";
 import axios from "axios";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register components for chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface Student {
   id: number;
@@ -15,8 +34,8 @@ interface Student {
 const LineChart: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [chartData, setChartData] = useState<any>({
-    series: [],
-    options: {},
+    labels: [],
+    datasets: [],
   });
 
   useEffect(() => {
@@ -26,43 +45,25 @@ const LineChart: React.FC = () => {
         const data = res.data;
 
         // Prepare data for the chart
-        const series = [
-          {
-            name: "Subjects", // You can customize this name
-            data: data.map((student: Student) => student.subject.length),
-          },
-        ];
-
-        const categories = data.map(
+        const labels = data.map(
           (student: Student) => `${student.firstName} ${student.lastName}`
         );
 
+        const subjectLengths = data.map(
+          (student: Student) => student.subject.length
+        );
+
         setChartData({
-          series: series,
-          options: {
-            chart: {
-              type: "line",
-              height: 350,
+          labels: labels,
+          datasets: [
+            {
+              label: "Subjects Length", // Label for the dataset
+              data: subjectLengths, // Data for the chart
+              backgroundColor: "rgba(75, 192, 192, 0.2)",
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 1,
             },
-            xaxis: {
-              categories: categories,
-              title: {
-                text: "Students",
-              },
-            },
-            yaxis: {
-              title: {
-                text: "Subject Length",
-              },
-            },
-            stroke: {
-              curve: "smooth",
-            },
-            title: {
-              text: "Student Subjects Length",
-              align: "center",
-            },
-          },
+          ],
         });
       })
       .catch((error) => {
@@ -72,11 +73,20 @@ const LineChart: React.FC = () => {
 
   return (
     <div>
-      <Chart
-        options={chartData.options}
-        series={chartData.series}
-        type="line"
-        height={350}
+      <Bar
+        data={chartData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+            title: {
+              display: true,
+              text: "Student Subjects Length",
+            },
+          },
+        }}
       />
     </div>
   );
