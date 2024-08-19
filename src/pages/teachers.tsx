@@ -9,12 +9,14 @@ import {
   message,
   Select,
 } from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
 
-interface DataType {
+// Define interface for API response
+interface ApiResponse {
   id: number;
   key: React.Key;
   firstName: string;
@@ -29,42 +31,52 @@ interface DataType {
   teacherphone?: string;
 }
 
-interface TeacherOption {
-  value: string;
-  label: string;
+// Define the type for form values
+interface FormValues {
+  firstName: string;
+  lastName: string;
+  className: string;
+  studentemail: string;
+  studentphone: string;
+  teacherlastname: string;
+  subject: string;
+  teacheremail: string;
+  teacherphone: string;
+  teachername: string;
 }
 
+// Define type for class options
 interface ClassOption {
   value: string;
   label: string;
 }
 
 const App: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]);
+  const [data, setData] = useState<ApiResponse[]>([]);
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [classes, setClasses] = useState<ClassOption[]>([]);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  const [srekord, setserekord] = useState<DataType | null>(null);
-  const [teachers, setTeachers] = useState<TeacherOption[]>([]);
-  const [classes, setClasses] = useState<ClassOption[]>([]);
-  const [inputTeacherName, setInputTeacherName] = useState<string>("");
+  const [selectedRecord, setSelectedRecord] = useState<ApiResponse | null>(
+    null
+  );
 
-  const showDrawer = (rekord: DataType | null = null) => {
-    setserekord(rekord);
+  const showDrawer = (record: ApiResponse | null = null) => {
+    setSelectedRecord(record);
     form.resetFields();
-    if (rekord) {
+    if (record) {
       form.setFieldsValue({
-        firstName: rekord.firstName,
-        lastName: rekord.lastName,
-        className: rekord.className,
-        studentemail: rekord.studentemail,
-        studentphone: rekord.studentphone,
-        teacherlastname: rekord.teacherlastname,
-        subject: rekord.subject,
-        teacheremail: rekord.teacheremail,
-        teacherphone: rekord.teacherphone,
-        teachername: rekord.teachername, // Added to set initial value
+        firstName: record.firstName,
+        lastName: record.lastName,
+        className: record.className,
+        studentemail: record.studentemail,
+        studentphone: record.studentphone,
+        teacherlastname: record.teacherlastname,
+        subject: record.subject,
+        teacheremail: record.teacheremail,
+        teacherphone: record.teacherphone,
+        teachername: record.teachername || "",
       });
-      setInputTeacherName(rekord.teachername || ""); // Set initial value
     }
     setOpen(true);
   };
@@ -72,18 +84,16 @@ const App: React.FC = () => {
   const onClose = () => {
     setOpen(false);
     form.resetFields();
-    setInputTeacherName("");
   };
 
   useEffect(() => {
-    // Fetch student data and teachers
+    // Fetch student data
     axios
-      .get("https://c7bdff0b28aa98c1.mokky.dev/student")
+      .get<ApiResponse[]>("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
         const formattedData = res.data
-          .filter((item: any) => item.teachername && item.teacheremail)
-          .slice(0, 5)
-          .map((item: any) => ({
+          .filter((item) => item.teachername && item.teacheremail)
+          .map((item) => ({
             id: item.id,
             key: item.id,
             firstName: item.firstName,
@@ -99,36 +109,17 @@ const App: React.FC = () => {
           }));
         setData(formattedData);
 
-        // Extract unique teacher names and create options for Select component
-        const teacherNames: string[] = res.data
-          .filter((item: any) => item.teachername)
-          .map((item: any) => item.teachername);
+        // Fetch subjects for the select component
+        const subjectsSet = new Set(res.data.map((item) => item.subject));
+        const uniqueSubjects = Array.from(subjectsSet) as string[];
+        setSubjects(uniqueSubjects);
 
-        const uniqueTeacherNames = Array.from(new Set(teacherNames));
-
-        const uniqueTeachers: TeacherOption[] = uniqueTeacherNames.map(
-          (teacherName) => ({
-            value: teacherName as string,
-            label: teacherName as string,
-          })
-        );
-
-        setTeachers(uniqueTeachers);
-
-        // Extract unique class names and create options for Select component
-        const classNames: string[] = res.data.map(
-          (item: any) => item.className
-        );
-
-        const uniqueClassNames = Array.from(new Set(classNames));
-
-        const uniqueClasses: ClassOption[] = uniqueClassNames.map(
-          (className) => ({
-            value: className as string,
-            label: className as string,
-          })
-        );
-
+        // Fetch classes for the select component
+        const classesSet = new Set(res.data.map((item) => item.className));
+        const uniqueClasses = Array.from(classesSet).map((cls) => ({
+          value: cls,
+          label: cls,
+        }));
         setClasses(uniqueClasses);
       })
       .catch((error) => {
@@ -136,30 +127,32 @@ const App: React.FC = () => {
       });
   }, []);
 
-  const delet = (id: number) => {
+  const deleteRecord = (id: number) => {
     axios
       .delete(`https://c7bdff0b28aa98c1.mokky.dev/student/${id}`)
       .then(() => {
         setData((prevData) => prevData.filter((item) => item.id !== id));
+        message.success("Yozuv muvaffaqiyatli o'chirildi");
       })
       .catch((error) => {
         console.error("Ma'lumotlarni o'chirishda xato:", error);
+        message.error("Yozuvni o'chirishda xato yuz berdi");
       });
   };
 
-  const submit = (values: any) => {
-    if (srekord) {
-      // Tahrirlash
+  const submit = (values: FormValues) => {
+    if (selectedRecord) {
+      // Update record
       axios
         .patch(
-          `https://c7bdff0b28aa98c1.mokky.dev/student/${srekord.id}`,
-          { ...values, teachername: inputTeacherName } // Include the teachername
+          `https://c7bdff0b28aa98c1.mokky.dev/student/${selectedRecord.id}`,
+          { ...values, teachername: values.teachername }
         )
         .then(() => {
           setData((prevData) =>
             prevData.map((item) =>
-              item.id === srekord.id
-                ? { ...item, ...values, teachername: inputTeacherName }
+              item.id === selectedRecord.id
+                ? { ...item, ...values, teachername: values.teachername }
                 : item
             )
           );
@@ -171,12 +164,9 @@ const App: React.FC = () => {
           message.error("Tahrirlashda xato yuz berdi");
         });
     } else {
-      // Yangi yozuv qo'shish
+      // Add new record
       axios
-        .post("https://c7bdff0b28aa98c1.mokky.dev/student", {
-          ...values,
-          teachername: inputTeacherName,
-        })
+        .post("https://c7bdff0b28aa98c1.mokky.dev/student", values)
         .then((res) => {
           setData((prevData) => [
             ...prevData,
@@ -194,7 +184,11 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Button type="primary" onClick={() => showDrawer()}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => showDrawer()}
+      >
         Create
       </Button>
       <Table dataSource={data} style={{ marginTop: 20 }}>
@@ -215,26 +209,31 @@ const App: React.FC = () => {
         <Column
           title="Action"
           key="action"
-          render={(_: any, record: DataType) => (
+          render={(_: any, record: ApiResponse) => (
             <Space size="middle">
-              <a href="#" onClick={() => showDrawer(record)}>
-                Tahrirlash
-              </a>
-              <a href="#" onClick={() => delet(record.id)}>
-                O'chirish
-              </a>
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => showDrawer(record)}
+                type="link"
+              />
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => deleteRecord(record.id)}
+                type="link"
+                danger
+              />
             </Space>
           )}
         />
       </Table>
       <Drawer
-        title={srekord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"}
+        title={selectedRecord ? "Edit Record" : "Add New Record"}
         onClose={onClose}
         open={open}
         footer={
           <div style={{ textAlign: "right" }}>
             <Button onClick={onClose} style={{ marginRight: 8 }}>
-              Bekor qilish
+              Cancel
             </Button>
             <Button
               onClick={() =>
@@ -245,26 +244,12 @@ const App: React.FC = () => {
               }
               type="primary"
             >
-              Saqlash
+              Save
             </Button>
           </div>
         }
       >
-        <Form form={form} layout="vertical" onFinish={submit}>
-          <Form.Item
-            label="First Name"
-            name="firstName"
-            rules={[{ required: true, message: "First Name kiriting!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Last Name"
-            name="lastName"
-            rules={[{ required: true, message: "Last Name kiriting!" }]}
-          >
-            <Input />
-          </Form.Item>
+        <Form form={form} layout="vertical">
           <Form.Item
             label="Class"
             name="className"
@@ -279,64 +264,67 @@ const App: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            label="Student Email"
-            name="studentemail"
-            rules={[{ required: true, message: "Student Email kiriting!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Student Phone"
-            name="studentphone"
-            rules={[{ required: true, message: "Student Phone kiriting!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Teacher Name" name="teachername">
-            {srekord ? (
-              <Input
-                value={inputTeacherName}
-                onChange={(e) => setInputTeacherName(e.target.value)}
-                placeholder="Teacher Name"
-              />
-            ) : (
-              <Select
-                placeholder="Teacher Name tanlang"
-                onChange={(value) => setInputTeacherName(value)}
-              >
-                {teachers.map((teacher) => (
-                  <Option key={teacher.value} value={teacher.value}>
-                    {teacher.label}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </Form.Item>
-          <Form.Item
-            label="Teacher Last Name"
-            name="teacherlastname"
-            rules={[{ required: true, message: "Teacher Last Name kiriting!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
             label="Subject"
             name="subject"
-            rules={[{ required: true, message: "Subject kiriting!" }]}
+            rules={[{ required: true, message: "Please select the subject" }]}
+          >
+            <Select placeholder="Select subject">
+              {subjects.map((subject) => (
+                <Option key={subject} value={subject}>
+                  {subject}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Name"
+            name="teachername"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the teacher's name",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Teacher Email"
+            label="Last Name"
+            name="teacherlastname"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the teacher's last name",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Email"
             name="teacheremail"
-            rules={[{ required: true, message: "Teacher Email kiriting!" }]}
+            rules={[
+              {
+                type: "email",
+                message: "The input is not valid E-mail!",
+              },
+              {
+                required: true,
+                message: "Please enter the teacher's email",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Teacher Phone"
+            label="Phone"
             name="teacherphone"
-            rules={[{ required: true, message: "Teacher Phone kiriting!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please enter the teacher's phone number",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
