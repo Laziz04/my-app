@@ -244,11 +244,10 @@ const App: React.FC = () => {
             rules={[{ required: true, message: "Class tanlang!" }]}
           >
             <Select placeholder="Class tanlang">
-              {classes.map((className) => (
-                <Option key={className} value={className}>
-                  {className}
-                </Option>
-              ))}
+              <Option value="A">A</Option>
+              <Option value="B">B</Option>
+              <Option value="C">C</Option>
+              <Option value="D">D</Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -264,11 +263,9 @@ const App: React.FC = () => {
             rules={[{ required: true, message: "Teacher Name tanlang!" }]}
           >
             <Select placeholder="Teacher tanlang">
-              {teachers.map((teacher) => (
-                <Option key={teacher.id} value={teacher.name}>
-                  {teacher.name}
-                </Option>
-              ))}
+              <Option value="Islomov Akmal">Islomov Akmal</Option>
+              <Option value="Karimov Baxtiyor">Karimov Baxtiyor</Option>
+              <Option value="Sultonov Ibrohim">Sultonov Ibrohim</Option>
             </Select>
           </Form.Item>
         </Form>
