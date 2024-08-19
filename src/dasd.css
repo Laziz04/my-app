@@ -1,0 +1,76 @@
+/* Umumiy layout uchun uslublar */
+.app-layout {
+  min-height: 100vh;
+}
+
+.app-sider {
+  background: #001529;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 16px;
+  background: #001529;
+  color: #fff;
+}
+
+.app-menu-icon {
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.app-logo-text {
+  margin-left: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+
+.app-header {
+  background: #fff;
+  padding: 0 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.app-content {
+  padding: 24px;
+}
+
+.app-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.app-select {
+  width: 100%;
+}
+
+.app-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.app-spin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
