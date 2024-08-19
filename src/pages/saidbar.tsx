@@ -14,6 +14,7 @@ import Otaonalar from "./Otaonalar";
 import Oqituvchilar from "./teachers";
 import Jurnal from "./journal";
 import "../App.css"; // Add custom styles
+import Siniflar from "./siniflar";
 
 const { Header, Sider, Content } = Layout;
 
@@ -59,11 +60,16 @@ const App: React.FC = () => {
             },
             {
               key: "4",
+              icon: <BsFillPeopleFill className="h-6 w-6" />,
+              label: <Link to="/siniflar">O'siniflar</Link>,
+            },
+            {
+              key: "5",
               icon: <RiParentFill className="h-6 w-6" />,
               label: <Link to="/Otaonalar">Ota onalar</Link>,
             },
             {
-              key: "5",
+              key: "6",
               icon: <FaBookBookmark className="h-6 w-6" />,
               label: <Link to="/Jurnal">Jurnal</Link>,
             },
@@ -97,6 +103,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/O'qituvchilar" element={<Oqituvchilar />} />
             <Route path="/O'quvchilar" element={<Oquvchilar />} />
+            <Route path="/siniflar" element={<Siniflar />} />
             <Route path="/Otaonalar" element={<Otaonalar />} />
             <Route path="/Jurnal" element={<Jurnal />} />
           </Routes>
