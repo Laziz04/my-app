@@ -23,8 +23,6 @@ interface DataType {
   studentemail: string;
   studentphone: string;
   teachername?: string;
-  teacherlastname?: string;
-  subject?: string;
   teacheremail?: string;
   teacherphone?: string;
 }
@@ -58,10 +56,6 @@ const App: React.FC = () => {
         studentemail: rekord.studentemail,
         studentphone: rekord.studentphone,
         teachername: rekord.teachername,
-        teacherlastname: rekord.teacherlastname,
-        subject: rekord.subject,
-        teacheremail: rekord.teacheremail,
-        teacherphone: rekord.teacherphone,
       });
     }
     setOpen(true);
@@ -89,8 +83,6 @@ const App: React.FC = () => {
           studentemail: item.studentemail,
           studentphone: item.studentphone,
           teachername: item.teachername,
-          teacherlastname: item.teacherlastname,
-          subject: item.subject,
           teacheremail: item.teacheremail,
           teacherphone: item.teacherphone,
         }));
@@ -198,11 +190,6 @@ const App: React.FC = () => {
           />
           <Column title="Class" dataIndex="className" key="className" />
           <Column title="Phone" dataIndex="studentphone" key="studentphone" />
-          <Column
-            title="Teacher Email"
-            dataIndex="teacheremail"
-            key="teacheremail"
-          />
         </ColumnGroup>
         <Column
           title="Action"
@@ -289,18 +276,6 @@ const App: React.FC = () => {
                 </Option>
               ))}
             </Select>
-          </Form.Item>
-          <Form.Item label="Teacher Last Name" name="teacherlastname">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Subject" name="subject">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Teacher Email" name="teacheremail">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Teacher Phone" name="teacherphone">
-            <Input />
           </Form.Item>
         </Form>
       </Drawer>
