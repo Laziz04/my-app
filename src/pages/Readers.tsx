@@ -29,30 +29,39 @@ interface DataType {
   teacherphone?: string;
 }
 
-interface Teacher {
-  id: number;
-  name: string;
+interface TeacherOption {
+  value: string;
+  label: string;
+}
+
+interface ClassOption {
+  value: string;
+  label: string;
 }
 
 const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [classes, setClasses] = useState<string[]>([]); // Class uchun state
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const [srekord, setserekord] = useState<DataType | null>(null);
+  const [teachers, setTeachers] = useState<TeacherOption[]>([]);
+  const [classes, setClasses] = useState<ClassOption[]>([]);
 
-  const showDrawer = (record: DataType | null = null) => {
-    setSelectedRecord(record);
+  const showDrawer = (rekord: DataType | null = null) => {
+    setserekord(rekord);
     form.resetFields();
-    if (record) {
+    if (rekord) {
       form.setFieldsValue({
-        firstName: record.firstName,
-        lastName: record.lastName,
-        className: record.className,
-        studentemail: record.studentemail,
-        studentphone: record.studentphone,
-        teachername: record.teachername,
+        firstName: rekord.firstName,
+        lastName: rekord.lastName,
+        className: rekord.className,
+        studentemail: rekord.studentemail,
+        studentphone: rekord.studentphone,
+        teachername: rekord.teachername,
+        teacherlastname: rekord.teacherlastname,
+        subject: rekord.subject,
+        teacheremail: rekord.teacheremail,
+        teacherphone: rekord.teacherphone,
       });
     }
     setOpen(true);
@@ -64,11 +73,14 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // O'quvchilarni olish
+    // Fetch student data
     axios
       .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
-        const formattedData = res.data.slice(0, 5).map((item: any) => ({
+        const studentData = res.data;
+
+        // Process and set student data for table
+        const formattedData: DataType[] = studentData.map((item: any) => ({
           id: item.id,
           key: item.id,
           firstName: item.firstName,
@@ -83,61 +95,67 @@ const App: React.FC = () => {
           teacherphone: item.teacherphone,
         }));
         setData(formattedData);
+
+        // Extract unique teacher names and create options for Select component
+        const teacherNames: string[] = studentData
+          .map((item: any) => item.teachername)
+          .filter((name: any) => name); // Filter out undefined or null values
+
+        const uniqueTeacherNames = Array.from(new Set(teacherNames));
+
+        const uniqueTeachers: TeacherOption[] = uniqueTeacherNames.map(
+          (teacherName) => ({
+            value: teacherName as string,
+            label: teacherName as string,
+          })
+        );
+
+        setTeachers(uniqueTeachers);
+
+        // Extract unique class names and create options for Select component
+        const classNames: string[] = studentData
+          .map((item: any) => item.className)
+          .filter((name: any) => name); // Filter out undefined or null values
+
+        const uniqueClassNames = Array.from(new Set(classNames));
+
+        const uniqueClasses: ClassOption[] = uniqueClassNames.map(
+          (className) => ({
+            value: className as string,
+            label: className as string,
+          })
+        );
+
+        setClasses(uniqueClasses);
       })
       .catch((error) => {
         console.error("Ma'lumotlarni olishda xato:", error);
       });
-
-    // O'qituvchilarni olish
-    axios
-      .get("https://c7bdff0b28aa98c1.mokky.dev/teachers")
-      .then((res) => {
-        const teacherData = res.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-        }));
-        setTeachers(teacherData);
-      })
-      .catch((error) => {
-        console.error("O'qituvchilarni olishda xato:", error);
-      });
-
-    // Sinflarni olish (Misol uchun, sinflarni serverdan olish)
-    axios
-      .get("https://c7bdff0b28aa98c1.mokky.dev/classes")
-      .then((res) => {
-        setClasses(res.data);
-      })
-      .catch((error) => {
-        console.error("Sinflarni olishda xato:", error);
-      });
   }, []);
 
-  const deleteRecord = (id: number) => {
+  const delet = (id: number) => {
     axios
       .delete(`https://c7bdff0b28aa98c1.mokky.dev/student/${id}`)
       .then(() => {
         setData((prevData) => prevData.filter((item) => item.id !== id));
-        message.success("Yozuv muvaffaqiyatli o'chirildi");
       })
       .catch((error) => {
         console.error("Ma'lumotlarni o'chirishda xato:", error);
-        message.error("O'chirishda xato yuz berdi");
       });
   };
 
   const submit = (values: any) => {
-    if (selectedRecord) {
-      // Yozuvni yangilash
+    if (srekord) {
+      // Tahrirlash
       axios
         .patch(
-          `https://c7bdff0b28aa98c1.mokky.dev/student/${selectedRecord.id}`,
+          `https://c7bdff0b28aa98c1.mokky.dev/student/${srekord.id}`,
           values
         )
         .then(() => {
           setData((prevData) =>
             prevData.map((item) =>
-              item.id === selectedRecord.id ? { ...item, ...values } : item
+              item.id === srekord.id ? { ...item, ...values } : item
             )
           );
           message.success("Ma'lumotlar muvaffaqiyatli tahrirlandi");
@@ -169,18 +187,21 @@ const App: React.FC = () => {
   return (
     <>
       <Button type="primary" onClick={() => showDrawer()}>
-        Yangi yozuv qo'shish
+        Create
       </Button>
       <Table dataSource={data} style={{ marginTop: 20 }}>
         <ColumnGroup title="Student Information">
-          <Column title="First Name" dataIndex="firstName" key="firstName" />
-          <Column title="Last Name" dataIndex="lastName" key="lastName" />
-          <Column title="Class" dataIndex="className" key="className" />
-          <Column title="Phone" dataIndex="studentphone" key="studentphone" />
           <Column
             title="Teacher Name"
             dataIndex="teachername"
             key="teachername"
+          />
+          <Column title="Class" dataIndex="className" key="className" />
+          <Column title="Phone" dataIndex="studentphone" key="studentphone" />
+          <Column
+            title="Teacher Email"
+            dataIndex="teacheremail"
+            key="teacheremail"
           />
         </ColumnGroup>
         <Column
@@ -191,7 +212,7 @@ const App: React.FC = () => {
               <a href="#" onClick={() => showDrawer(record)}>
                 Tahrirlash
               </a>
-              <a href="#" onClick={() => deleteRecord(record.id)}>
+              <a href="#" onClick={() => delet(record.id)}>
                 O'chirish
               </a>
             </Space>
@@ -199,9 +220,7 @@ const App: React.FC = () => {
         />
       </Table>
       <Drawer
-        title={
-          selectedRecord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"
-        }
+        title={srekord ? "Ma'lumotlarni tahrirlash" : "Yangi yozuv qo'shish"}
         onClose={onClose}
         open={open}
         footer={
@@ -241,13 +260,14 @@ const App: React.FC = () => {
           <Form.Item
             label="Class"
             name="className"
-            rules={[{ required: true, message: "Class tanlang!" }]}
+            rules={[{ required: true, message: "Class kiriting!" }]}
           >
             <Select placeholder="Class tanlang">
-              <Option value="A">A</Option>
-              <Option value="B">B</Option>
-              <Option value="C">C</Option>
-              <Option value="D">D</Option>
+              {classes.map((cls) => (
+                <Option key={cls.value} value={cls.value}>
+                  {cls.label}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -260,15 +280,27 @@ const App: React.FC = () => {
           <Form.Item
             label="Teacher Name"
             name="teachername"
-            rules={[{ required: true, message: "Teacher Name tanlang!" }]}
+            rules={[{ required: true, message: "Teacher Name kiriting!" }]}
           >
             <Select placeholder="Teacher tanlang">
-              <Option value="Islomov Akmal">Islomov Akmal</Option>
-              <Option value="Karimov Baxtiyor">Karimov Baxtiyor</Option>
-              <Option value="Sultonov Ibrohim">Nodirbek Nodirbek</Option>
-              <Option value="Sultonov Ibrohim">Tursun Mustafayev</Option>
-              <Option value="Sultonov Ibrohim">Lola Sirojova</Option>
+              {teachers.map((teacher) => (
+                <Option key={teacher.value} value={teacher.value}>
+                  {teacher.label}
+                </Option>
+              ))}
             </Select>
+          </Form.Item>
+          <Form.Item label="Teacher Last Name" name="teacherlastname">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Subject" name="subject">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Teacher Email" name="teacheremail">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Teacher Phone" name="teacherphone">
+            <Input />
           </Form.Item>
         </Form>
       </Drawer>

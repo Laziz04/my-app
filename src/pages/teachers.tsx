@@ -29,11 +29,23 @@ interface DataType {
   teacherphone?: string;
 }
 
+interface TeacherOption {
+  value: string;
+  label: string;
+}
+
+interface ClassOption {
+  value: string;
+  label: string;
+}
+
 const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const [srekord, setserekord] = useState<DataType | null>(null);
+  const [teachers, setTeachers] = useState<TeacherOption[]>([]);
+  const [classes, setClasses] = useState<ClassOption[]>([]);
 
   const showDrawer = (rekord: DataType | null = null) => {
     setserekord(rekord);
@@ -61,6 +73,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // Fetch student data and teachers
     axios
       .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
@@ -82,6 +95,38 @@ const App: React.FC = () => {
             teacherphone: item.teacherphone,
           }));
         setData(formattedData);
+
+        // Extract unique teacher names and create options for Select component
+        const teacherNames: string[] = res.data
+          .filter((item: any) => item.teachername)
+          .map((item: any) => item.teachername);
+
+        const uniqueTeacherNames = Array.from(new Set(teacherNames));
+
+        const uniqueTeachers: TeacherOption[] = uniqueTeacherNames.map(
+          (teacherName) => ({
+            value: teacherName as string,
+            label: teacherName as string,
+          })
+        );
+
+        setTeachers(uniqueTeachers);
+
+        // Extract unique class names and create options for Select component
+        const classNames: string[] = res.data.map(
+          (item: any) => item.className
+        );
+
+        const uniqueClassNames = Array.from(new Set(classNames));
+
+        const uniqueClasses: ClassOption[] = uniqueClassNames.map(
+          (className) => ({
+            value: className as string,
+            label: className as string,
+          })
+        );
+
+        setClasses(uniqueClasses);
       })
       .catch((error) => {
         console.error("Ma'lumotlarni olishda xato:", error);
@@ -151,7 +196,6 @@ const App: React.FC = () => {
             dataIndex="teachername"
             key="teachername"
           />
-
           <Column title="Class" dataIndex="className" key="className" />
           <Column title="Phone" dataIndex="studentphone" key="studentphone" />
           <Column
@@ -219,10 +263,11 @@ const App: React.FC = () => {
             rules={[{ required: true, message: "Class kiriting!" }]}
           >
             <Select placeholder="Class tanlang">
-              <Option value="A">A</Option>
-              <Option value="B">B</Option>
-              <Option value="C">C</Option>
-              <Option value="D">D</Option>
+              {classes.map((cls) => (
+                <Option key={cls.value} value={cls.value}>
+                  {cls.label}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -238,18 +283,23 @@ const App: React.FC = () => {
             rules={[{ required: true, message: "Teacher Name kiriting!" }]}
           >
             <Select placeholder="Teacher tanlang">
-              <Option value="Islomov Akmal">Islomov Akmal</Option>
-              <Option value="Karimov Baxtiyor">Karimov Baxtiyor</Option>
-              <Option value="Sultonov Ibrohim">Nodirbek Nodirbek</Option>
-              <Option value="Sultonov Ibrohim">Tursun Mustafayev</Option>
-              <Option value="Sultonov Ibrohim">Lola Sirojova</Option>
+              {teachers.map((teacher) => (
+                <Option key={teacher.value} value={teacher.value}>
+                  {teacher.label}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            label="Teacher Email"
-            name="teacheremail"
-            rules={[{ required: true, message: "Teacher Email kiriting!" }]}
-          >
+          <Form.Item label="Teacher Last Name" name="teacherlastname">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Subject" name="subject">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Teacher Email" name="teacheremail">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Teacher Phone" name="teacherphone">
             <Input />
           </Form.Item>
         </Form>
