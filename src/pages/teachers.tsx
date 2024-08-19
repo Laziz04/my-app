@@ -65,7 +65,7 @@ const App: React.FC = () => {
       .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
         const formattedData = res.data
-          .filter((item: any) => item.teachername && item.teacheremail) // Filter out records without teacher information
+          .filter((item: any) => item.teachername && item.teacheremail)
           .slice(0, 5)
           .map((item: any) => ({
             id: item.id,
@@ -147,15 +147,11 @@ const App: React.FC = () => {
       <Table dataSource={data} style={{ marginTop: 20 }}>
         <ColumnGroup title="Student Information">
           <Column
-            title="teachername"
+            title="Teacher Name"
             dataIndex="teachername"
             key="teachername"
           />
-          <Column
-            title="teacherlastname"
-            dataIndex="teacherlastname"
-            key="teacherlastname"
-          />
+
           <Column title="Class" dataIndex="className" key="className" />
           <Column title="Phone" dataIndex="studentphone" key="studentphone" />
           <Column
