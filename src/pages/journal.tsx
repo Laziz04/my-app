@@ -1,111 +1,127 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Select, Button, Table, Spin, Modal, Input, Form } from "antd";
+import {
+  Table,
+  Layout,
+  Select,
+  Row,
+  Col,
+  Button,
+  Input,
+  Space,
+  Pagination,
+} from "antd";
 import axios from "axios";
-import "antd/dist/reset.css";
-import "../dasd.css";
 
 const { Content } = Layout;
 const { Option } = Select;
+
+// Define interfaces for the student and topic types
+interface Topic {
+  topicName: string;
+  topicDate: string;
+}
 
 interface Student {
   id: number;
   firstName: string;
   lastName: string;
   className: string;
-  subject: string;
+  studentemail: string;
+  studentphone: string;
   teachername: string;
   teacherlastname: string;
-  grade?: number; // Optional property
+  subject: string;
+  teacheremail: string;
+  teacherphone: string;
+  classCount: string;
+  grade: string;
+  topics: Topic[]; // Add topics field
 }
 
-const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+interface OptionType {
+  value: string;
+  label: string;
+}
+
+const Jurnal = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
-  const [classes, setClasses] = useState<string[]>([
-    "10-S",
-    "10-N",
-    "10-Q",
-    "10-R",
-  ]);
-  const [quarters, setQuarters] = useState<string[]>(["1", "2", "3", "4"]);
-  const [subjects, setSubjects] = useState<string[]>([
-    "Kimyo",
-    "Geografiya",
-    "Matematika",
-    "Ona tili",
-  ]);
-  const [groups, setGroups] = useState<string[]>([
-    "Biriktilmagan",
-    "Guruh 1",
-    "Guruh 2",
-  ]);
-  const [selectedSubject, setSelectedSubject] = useState<string>(subjects[0]);
-  const [selectedClass, setSelectedClass] = useState<string>(classes[0]);
-  const [selectedQuarter, setSelectedQuarter] = useState<string>(quarters[0]);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
+  const [classes, setClasses] = useState<OptionType[]>([]);
+  const [subjects, setSubjects] = useState<OptionType[]>([]);
+  const [selectedClass, setSelectedClass] = useState<string | undefined>(
+    undefined
+  );
+  const [selectedSubject, setSelectedSubject] = useState<string | undefined>(
+    undefined
+  );
+  const [view, setView] = useState<"grades" | "subjects">("grades");
+  const [editableStudentId, setEditableStudentId] = useState<number | null>(
     null
   );
-  const [form] = Form.useForm();
+  const [newGrade, setNewGrade] = useState<string>("");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize] = useState<number>(7);
 
   useEffect(() => {
+    // Fetch students
     axios
-      .get<Student[]>("https://c7bdff0b28aa98c1.mokky.dev/student")
+      .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((response) => {
-        setStudents(response.data);
-        setFilteredStudents(response.data); // Initialize filteredStudents with all students
-        setLoading(false);
+        const data = response.data as Student[];
+        setStudents(data);
+        setFilteredStudents(data);
+
+        // Extract unique classes and subjects for select options
+        const classOptions = Array.from(
+          new Set(data.map((student) => student.className))
+        ).map((name) => ({ value: name, label: name }));
+        setClasses(classOptions);
+
+        const subjectOptions = Array.from(
+          new Set(data.map((student) => student.subject))
+        ).map((name) => ({ value: name, label: name }));
+        setSubjects(subjectOptions);
       })
       .catch((error) => {
-        console.error("APIdan ma'lumot olishda xatolik:", error);
-        setLoading(false);
+        console.error("API bilan ulanishda xatolik:", error);
       });
   }, []);
 
   useEffect(() => {
-    setFilteredStudents(
-      students.filter(
-        (student) =>
-          student.subject === selectedSubject &&
-          student.className === selectedClass
+    // Filter students based on selected class and subject
+    let filtered = students;
+
+    if (selectedClass) {
+      filtered = filtered.filter(
+        (student) => student.className === selectedClass
+      );
+    }
+
+    if (selectedSubject) {
+      filtered = filtered.filter(
+        (student) => student.subject === selectedSubject
+      );
+    }
+
+    setFilteredStudents(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [selectedClass, selectedSubject, students]);
+
+  const handleGradeChange = (id: number, grade: string) => {
+    // Update the grade for the selected student
+    setStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.id === id ? { ...student, grade } : student
       )
     );
-  }, [selectedSubject, selectedClass, students]);
-
-  const handleAssignGrade = (studentId: number) => {
-    setSelectedStudentId(studentId);
-    form.resetFields(); // Reset form fields
-    setIsModalVisible(true);
-  };
-
-  const handleModalOk = () => {
-    if (selectedStudentId !== null) {
-      const grade = form.getFieldValue("grade");
-      axios
-        .put(
-          `https://c7bdff0b28aa98c1.mokky.dev/student/${selectedStudentId}`,
-          { grade }
-        )
-        .then(() => {
-          setStudents((prevStudents) =>
-            prevStudents.map((student) =>
-              student.id === selectedStudentId ? { ...student, grade } : student
-            )
-          );
-          setFilteredStudents((prevStudents) =>
-            prevStudents.map((student) =>
-              student.id === selectedStudentId ? { ...student, grade } : student
-            )
-          );
-          setIsModalVisible(false);
-        })
-        .catch((error) => console.error("Grade update failed:", error));
-    }
-  };
-
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
+    setFilteredStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.id === id ? { ...student, grade } : student
+      )
+    );
+    setEditableStudentId(null);
   };
 
   const columns = [
@@ -113,131 +129,219 @@ const App: React.FC = () => {
       title: "№",
       dataIndex: "id",
       key: "id",
-      width: 50,
     },
     {
       title: "F.I.Sh",
-      dataIndex: "fullName",
-      key: "fullName",
-      width: 150,
-      render: (_: any, record: Student) =>
-        `${record.firstName} ${record.lastName}`,
+      dataIndex: "name",
+      key: "name",
+      render: (text: any, record: Student) =>
+        `${record.lastName} ${record.firstName}`,
     },
     {
       title: "Sinfi",
       dataIndex: "className",
       key: "className",
-      width: 100,
     },
     {
       title: "Fan",
       dataIndex: "subject",
       key: "subject",
-      width: 100,
-    },
-    {
-      title: "O'qituvchi",
-      dataIndex: "teachername",
-      key: "teachername",
-      width: 150,
-      render: (_: any, record: Student) =>
-        `${record.teachername} ${record.teacherlastname}`,
     },
     {
       title: "Baholar",
       dataIndex: "grade",
       key: "grade",
-      width: 100,
-      render: (grade: number) => (grade !== undefined ? grade : "N/A"),
+      render: (text: string, record: Student) => {
+        if (view === "grades" && editableStudentId === record.id) {
+          return (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Input
+                value={newGrade}
+                onChange={(e) => setNewGrade(e.target.value)}
+                style={{ width: "60px", marginRight: "8px" }}
+              />
+              <Button onClick={() => handleGradeChange(record.id, newGrade)}>
+                Save
+              </Button>
+            </div>
+          );
+        }
+
+        const grades = text.split(",");
+        return (
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {grades.map((grade, index) => {
+              let color = "";
+              switch (grade.trim()) {
+                case "5":
+                  color = "#a7e31a"; // green
+                  break;
+                case "4":
+                  color = "#ffdf32"; // yellow
+                  break;
+                case "3":
+                  color = "#ff9f3a"; // orange
+                  break;
+                case "2":
+                  color = "#ff3a3a"; // red
+                  break;
+                default:
+                  color = "#fff"; // white
+              }
+              return (
+                <div
+                  key={index}
+                  style={{
+                    backgroundColor: color,
+                    width: "40px",
+                    textAlign: "center",
+                    margin: "2px",
+                  }}
+                >
+                  {grade}
+                </div>
+              );
+            })}
+            <Button
+              onClick={() => {
+                setEditableStudentId(record.id);
+                setNewGrade(record.grade);
+              }}
+              style={{ marginLeft: "8px" }}
+            >
+              Edit
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const subjectColumns = [
+    {
+      title: "№",
+      dataIndex: "id",
+      key: "id",
     },
     {
-      title: "Action",
-      key: "action",
-      width: 150,
-      render: (_: any, record: Student) => (
-        <Button onClick={() => handleAssignGrade(record.id)}>Baho qo'y</Button>
+      title: "F.I.Sh",
+      dataIndex: "name",
+      key: "name",
+      render: (text: any, record: Student) =>
+        `${record.lastName} ${record.firstName}`,
+    },
+    {
+      title: "Sinfi",
+      dataIndex: "className",
+      key: "className",
+    },
+    {
+      title: "Fan",
+      dataIndex: "subject",
+      key: "subject",
+    },
+    {
+      title: "Mavzular sanasi va nomi",
+      dataIndex: "topics",
+      key: "topics",
+      render: (topics: Topic[]) => (
+        <div>
+          {topics.map((topic, index) => (
+            <div key={index}>
+              <strong>{topic.topicName}:</strong> {topic.topicDate}
+            </div>
+          ))}
+        </div>
       ),
     },
   ];
 
+  // Paginate filtered students
+  const paginatedData = filteredStudents.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
-    <Content className="app-content">
-      <div className="app-filters">
-        <Select
-          defaultValue={selectedClass}
-          onChange={(value) => setSelectedClass(value)}
-          className="app-select"
-        >
-          {classes.map((cls) => (
-            <Option key={cls} value={cls}>
-              {cls}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          defaultValue={selectedQuarter}
-          onChange={(value) => setSelectedQuarter(value)}
-          className="app-select"
-        >
-          {quarters.map((quarter) => (
-            <Option key={quarter} value={quarter}>
-              {quarter}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          value={selectedSubject}
-          onChange={(value) => setSelectedSubject(value)}
-          className="app-select"
-        >
-          {subjects.map((subject) => (
-            <Option key={subject} value={subject}>
-              {subject}
-            </Option>
-          ))}
-        </Select>
-        <Select defaultValue={groups[0]} className="app-select">
-          {groups.map((group) => (
-            <Option key={group} value={group}>
-              {group}
-            </Option>
-          ))}
-        </Select>
-      </div>
-      <div className="app-buttons">
-        <Button type="primary">Excelga export</Button>
-      </div>
-      {loading ? (
-        <div className="app-spin-container">
-          <Spin size="large" />
-        </div>
-      ) : (
-        <Table
-          columns={columns}
-          dataSource={filteredStudents}
-          pagination={false}
-          scroll={{ x: 1000 }}
-          rowKey="id"
-        />
-      )}
-      <Modal
-        title="Bahoni qo'yish"
-        visible={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="Baholar"
-            name="grade"
-            rules={[{ required: true, message: "Bahoni kiriting!" }]}
+    <Layout style={{ padding: "24px" }}>
+      <Content className="jurnal-content">
+        <Space style={{ marginBottom: "16px" }}>
+          <Button
+            onClick={() => setView("grades")}
+            type={view === "grades" ? "primary" : "default"}
           >
-            <Input type="number" />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </Content>
+            Baholar
+          </Button>
+          <Button
+            onClick={() => setView("subjects")}
+            type={view === "subjects" ? "primary" : "default"}
+          >
+            Mavzular
+          </Button>
+        </Space>
+        <Row gutter={16} style={{ marginBottom: "16px" }}>
+          <Col span={12}>
+            <Select
+              placeholder="Select Class"
+              style={{ width: "100%" }}
+              onChange={setSelectedClass}
+              value={selectedClass}
+            >
+              {classes.map((cls) => (
+                <Option key={cls.value} value={cls.value}>
+                  {cls.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col span={12}>
+            <Select
+              placeholder="Select Subject"
+              style={{ width: "100%" }}
+              onChange={setSelectedSubject}
+              value={selectedSubject}
+            >
+              {subjects.map((subj) => (
+                <Option key={subj.value} value={subj.value}>
+                  {subj.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+        </Row>
+        {view === "grades" ? (
+          <>
+            <Table
+              columns={columns}
+              dataSource={paginatedData}
+              rowKey="id"
+              pagination={false}
+            />
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredStudents.length}
+              onChange={(page) => setCurrentPage(page)}
+              style={{ marginTop: "16px", textAlign: "center" }}
+            />
+          </>
+        ) : (
+          <Table
+            columns={subjectColumns}
+            dataSource={paginatedData}
+            rowKey="id"
+            pagination={false}
+          />
+        )}
+      </Content>
+    </Layout>
   );
 };
 
-export default App;
+export default Jurnal;

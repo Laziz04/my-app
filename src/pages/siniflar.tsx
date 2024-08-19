@@ -10,6 +10,8 @@ import {
   Select,
 } from "antd";
 import axios from "axios";
+import { FaPen } from "react-icons/fa";
+import { GoTrash } from "react-icons/go";
 
 const { Column } = Table;
 const { Option } = Select;
@@ -19,14 +21,21 @@ interface DataType {
   key: React.Key;
   className: string;
   teachername: string;
+  classCount: number;
 }
 
 interface TeacherResponse {
   teachername: string;
 }
 
+interface ClassCount {
+  className: string;
+  count: number;
+}
+
 const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
+  const [classCounts, setClassCounts] = useState<ClassCount[]>([]);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const [editingRecord, setEditingRecord] = useState<DataType | null>(null);
@@ -47,8 +56,26 @@ const App: React.FC = () => {
         key: item.id,
         className: item.className,
         teachername: item.teachername,
+        classCount: 0, // Placeholder for class count
       }));
-      setData(formattedData);
+
+      const classCountMap: Record<string, number> = {};
+      formattedData.forEach((item: any) => {
+        classCountMap[item.className] =
+          (classCountMap[item.className] || 0) + 1;
+      });
+
+      const classCountArray = Object.keys(classCountMap).map((className) => ({
+        className,
+        count: classCountMap[className],
+      }));
+      setClassCounts(classCountArray);
+
+      const updatedData = formattedData.map((item: any) => ({
+        ...item,
+        classCount: classCountMap[item.className],
+      }));
+      setData(updatedData);
     } catch (error) {
       console.error("Error fetching data:", error);
       message.error("Failed to fetch data");
@@ -115,7 +142,6 @@ const App: React.FC = () => {
         );
         message.success("Record updated successfully");
       } else {
-        // Add new record
         const response = await axios.post(
           "https://c7bdff0b28aa98c1.mokky.dev/student",
           values
@@ -137,27 +163,29 @@ const App: React.FC = () => {
         Create
       </Button>
       <Table dataSource={data} style={{ marginTop: 20 }}>
-        <Column title="Class" dataIndex="className" key="className" />
         <Column
           title="Teacher Name"
           dataIndex="teachername"
           key="teachername"
         />
+        <Column title="Class" dataIndex="className" key="className" />
+        <Column title="Count" dataIndex="classCount" key="classCount" />
         <Column
           title="Action"
           key="action"
           render={(_: any, record: DataType) => (
             <Space size="middle">
               <a href="#" onClick={() => showDrawer(record)}>
-                Edit
+                <FaPen />
               </a>
               <a href="#" onClick={() => deleteRecord(record.id)}>
-                Delete
+                <GoTrash />
               </a>
             </Space>
           )}
         />
       </Table>
+
       <Drawer
         title={editingRecord ? "Edit Record" : "Add New Record"}
         onClose={onClose}

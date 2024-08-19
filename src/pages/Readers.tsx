@@ -10,6 +10,8 @@ import {
   Select,
 } from "antd";
 import axios from "axios";
+import { FaPen } from "react-icons/fa";
+import { GoTrash } from "react-icons/go";
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -183,11 +185,8 @@ const App: React.FC = () => {
       </Button>
       <Table dataSource={data} style={{ marginTop: 20 }}>
         <ColumnGroup title="Student Information">
-          <Column
-            title="Teacher Name"
-            dataIndex="teachername"
-            key="teachername"
-          />
+          <Column title="First Name" dataIndex="firstName" key="firstName" />
+          <Column title="Last Name" dataIndex="lastName" key="lastName" />
           <Column title="Class" dataIndex="className" key="className" />
           <Column title="Phone" dataIndex="studentphone" key="studentphone" />
         </ColumnGroup>
@@ -197,10 +196,10 @@ const App: React.FC = () => {
           render={(_: any, record: DataType) => (
             <Space size="middle">
               <a href="#" onClick={() => showDrawer(record)}>
-                Tahrirlash
+                <FaPen />
               </a>
               <a href="#" onClick={() => delet(record.id)}>
-                O'chirish
+                <GoTrash />
               </a>
             </Space>
           )}
