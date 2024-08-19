@@ -265,7 +265,9 @@ const App: React.FC = () => {
             <Select placeholder="Teacher tanlang">
               <Option value="Islomov Akmal">Islomov Akmal</Option>
               <Option value="Karimov Baxtiyor">Karimov Baxtiyor</Option>
-              <Option value="Sultonov Ibrohim">Sultonov Ibrohim</Option>
+              <Option value="Sultonov Ibrohim">Nodirbek Nodirbek</Option>
+              <Option value="Sultonov Ibrohim">Tursun Mustafayev</Option>
+              <Option value="Sultonov Ibrohim">Lola Sirojova</Option>
             </Select>
           </Form.Item>
         </Form>
