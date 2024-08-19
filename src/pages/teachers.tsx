@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Space, Table, Button, Drawer, message } from "antd";
+import {
+  Form,
+  Input,
+  Space,
+  Table,
+  Button,
+  Drawer,
+  message,
+  Select,
+} from "antd";
 import axios from "axios";
 
 const { Column, ColumnGroup } = Table;
+const { Option } = Select;
 
 interface DataType {
   id: number;
@@ -212,7 +222,12 @@ const App: React.FC = () => {
             name="className"
             rules={[{ required: true, message: "Class kiriting!" }]}
           >
-            <Input />
+            <Select placeholder="Class tanlang">
+              <Option value="A">A</Option>
+              <Option value="B">B</Option>
+              <Option value="C">C</Option>
+              <Option value="D">D</Option>
+            </Select>
           </Form.Item>
           <Form.Item
             label="Phone"
@@ -221,10 +236,22 @@ const App: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Teacher Name" name="teachername">
-            <Input />
+          <Form.Item
+            label="Teacher Name"
+            name="teachername"
+            rules={[{ required: true, message: "Teacher Name kiriting!" }]}
+          >
+            <Select placeholder="Teacher tanlang">
+              <Option value="Islomov Akmal">Islomov Akmal</Option>
+              <Option value="Karimov Baxtiyor">Karimov Baxtiyor</Option>
+              <Option value="Sultonov Ibrohim">Sultonov Ibrohim</Option>
+            </Select>
           </Form.Item>
-          <Form.Item label="Teacher Email" name="teacheremail">
+          <Form.Item
+            label="Teacher Email"
+            name="teacheremail"
+            rules={[{ required: true, message: "Teacher Email kiriting!" }]}
+          >
             <Input />
           </Form.Item>
         </Form>
