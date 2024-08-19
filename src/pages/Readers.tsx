@@ -37,6 +37,7 @@ interface Teacher {
 const App: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [classes, setClasses] = useState<string[]>([]); // Class uchun state
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
@@ -63,7 +64,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Fetch student data
+    // O'quvchilarni olish
     axios
       .get("https://c7bdff0b28aa98c1.mokky.dev/student")
       .then((res) => {
@@ -87,9 +88,9 @@ const App: React.FC = () => {
         console.error("Ma'lumotlarni olishda xato:", error);
       });
 
-    // Fetch teacher names
+    // O'qituvchilarni olish
     axios
-      .get("https://c7bdff0b28aa98c1.mokky.dev/teachers") // Adjust URL as needed
+      .get("https://c7bdff0b28aa98c1.mokky.dev/teachers")
       .then((res) => {
         const teacherData = res.data.map((item: any) => ({
           id: item.id,
@@ -100,6 +101,16 @@ const App: React.FC = () => {
       .catch((error) => {
         console.error("O'qituvchilarni olishda xato:", error);
       });
+
+    // Sinflarni olish (Misol uchun, sinflarni serverdan olish)
+    axios
+      .get("https://c7bdff0b28aa98c1.mokky.dev/classes")
+      .then((res) => {
+        setClasses(res.data);
+      })
+      .catch((error) => {
+        console.error("Sinflarni olishda xato:", error);
+      });
   }, []);
 
   const deleteRecord = (id: number) => {
@@ -107,15 +118,17 @@ const App: React.FC = () => {
       .delete(`https://c7bdff0b28aa98c1.mokky.dev/student/${id}`)
       .then(() => {
         setData((prevData) => prevData.filter((item) => item.id !== id));
+        message.success("Yozuv muvaffaqiyatli o'chirildi");
       })
       .catch((error) => {
         console.error("Ma'lumotlarni o'chirishda xato:", error);
+        message.error("O'chirishda xato yuz berdi");
       });
   };
 
   const submit = (values: any) => {
     if (selectedRecord) {
-      // Update existing record
+      // Yozuvni yangilash
       axios
         .patch(
           `https://c7bdff0b28aa98c1.mokky.dev/student/${selectedRecord.id}`,
@@ -135,7 +148,7 @@ const App: React.FC = () => {
           message.error("Tahrirlashda xato yuz berdi");
         });
     } else {
-      // Add new record
+      // Yangi yozuv qo'shish
       axios
         .post("https://c7bdff0b28aa98c1.mokky.dev/student", values)
         .then((res) => {
@@ -156,7 +169,7 @@ const App: React.FC = () => {
   return (
     <>
       <Button type="primary" onClick={() => showDrawer()}>
-        Create
+        Yangi yozuv qo'shish
       </Button>
       <Table dataSource={data} style={{ marginTop: 20 }}>
         <ColumnGroup title="Student Information">
@@ -228,9 +241,15 @@ const App: React.FC = () => {
           <Form.Item
             label="Class"
             name="className"
-            rules={[{ required: true, message: "Class kiriting!" }]}
+            rules={[{ required: true, message: "Class tanlang!" }]}
           >
-            <Input />
+            <Select placeholder="Class tanlang">
+              {classes.map((className) => (
+                <Option key={className} value={className}>
+                  {className}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             label="Phone"
@@ -244,7 +263,7 @@ const App: React.FC = () => {
             name="teachername"
             rules={[{ required: true, message: "Teacher Name tanlang!" }]}
           >
-            <Select placeholder="Select Teacher">
+            <Select placeholder="Teacher tanlang">
               {teachers.map((teacher) => (
                 <Option key={teacher.id} value={teacher.name}>
                   {teacher.name}
