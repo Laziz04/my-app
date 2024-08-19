@@ -46,6 +46,7 @@ const App: React.FC = () => {
   const [srekord, setserekord] = useState<DataType | null>(null);
   const [teachers, setTeachers] = useState<TeacherOption[]>([]);
   const [classes, setClasses] = useState<ClassOption[]>([]);
+  const [inputTeacherName, setInputTeacherName] = useState<string>("");
 
   const showDrawer = (rekord: DataType | null = null) => {
     setserekord(rekord);
@@ -57,12 +58,13 @@ const App: React.FC = () => {
         className: rekord.className,
         studentemail: rekord.studentemail,
         studentphone: rekord.studentphone,
-        teachername: rekord.teachername,
         teacherlastname: rekord.teacherlastname,
         subject: rekord.subject,
         teacheremail: rekord.teacheremail,
         teacherphone: rekord.teacherphone,
+        teachername: rekord.teachername, // Added to set initial value
       });
+      setInputTeacherName(rekord.teachername || ""); // Set initial value
     }
     setOpen(true);
   };
@@ -70,6 +72,7 @@ const App: React.FC = () => {
   const onClose = () => {
     setOpen(false);
     form.resetFields();
+    setInputTeacherName("");
   };
 
   useEffect(() => {
@@ -150,12 +153,14 @@ const App: React.FC = () => {
       axios
         .patch(
           `https://c7bdff0b28aa98c1.mokky.dev/student/${srekord.id}`,
-          values
+          { ...values, teachername: inputTeacherName } // Include the teachername
         )
         .then(() => {
           setData((prevData) =>
             prevData.map((item) =>
-              item.id === srekord.id ? { ...item, ...values } : item
+              item.id === srekord.id
+                ? { ...item, ...values, teachername: inputTeacherName }
+                : item
             )
           );
           message.success("Ma'lumotlar muvaffaqiyatli tahrirlandi");
@@ -168,7 +173,10 @@ const App: React.FC = () => {
     } else {
       // Yangi yozuv qo'shish
       axios
-        .post("https://c7bdff0b28aa98c1.mokky.dev/student", values)
+        .post("https://c7bdff0b28aa98c1.mokky.dev/student", {
+          ...values,
+          teachername: inputTeacherName,
+        })
         .then((res) => {
           setData((prevData) => [
             ...prevData,
@@ -271,35 +279,65 @@ const App: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            label="Phone"
-            name="studentphone"
-            rules={[{ required: true, message: "Phone kiriting!" }]}
+            label="Student Email"
+            name="studentemail"
+            rules={[{ required: true, message: "Student Email kiriting!" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Teacher Name"
-            name="teachername"
-            rules={[{ required: true, message: "Teacher Name kiriting!" }]}
+            label="Student Phone"
+            name="studentphone"
+            rules={[{ required: true, message: "Student Phone kiriting!" }]}
           >
-            <Select placeholder="Teacher tanlang">
-              {teachers.map((teacher) => (
-                <Option key={teacher.value} value={teacher.value}>
-                  {teacher.label}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Teacher Last Name" name="teacherlastname">
             <Input />
           </Form.Item>
-          <Form.Item label="Subject" name="subject">
+          <Form.Item label="Teacher Name" name="teachername">
+            {srekord ? (
+              <Input
+                value={inputTeacherName}
+                onChange={(e) => setInputTeacherName(e.target.value)}
+                placeholder="Teacher Name"
+              />
+            ) : (
+              <Select
+                placeholder="Teacher Name tanlang"
+                onChange={(value) => setInputTeacherName(value)}
+              >
+                {teachers.map((teacher) => (
+                  <Option key={teacher.value} value={teacher.value}>
+                    {teacher.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+          <Form.Item
+            label="Teacher Last Name"
+            name="teacherlastname"
+            rules={[{ required: true, message: "Teacher Last Name kiriting!" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Teacher Email" name="teacheremail">
+          <Form.Item
+            label="Subject"
+            name="subject"
+            rules={[{ required: true, message: "Subject kiriting!" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Teacher Phone" name="teacherphone">
+          <Form.Item
+            label="Teacher Email"
+            name="teacheremail"
+            rules={[{ required: true, message: "Teacher Email kiriting!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Teacher Phone"
+            name="teacherphone"
+            rules={[{ required: true, message: "Teacher Phone kiriting!" }]}
+          >
             <Input />
           </Form.Item>
         </Form>
